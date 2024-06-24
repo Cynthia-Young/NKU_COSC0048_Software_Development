@@ -18,8 +18,8 @@ def BackManage(request):
             device.status = '正常'
         elif device.state == 1:
             device.status = '故障'
-        else:
-            device.status = '未知'
+        # else:
+        #     device.status = '未知'
     context = {'users': users, 'devices': devices}  # 数据字典
     return render(request, 'BackManage/chronic.html', context)
 
