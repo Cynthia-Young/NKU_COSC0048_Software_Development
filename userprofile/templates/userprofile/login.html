@@ -1,0 +1,47 @@
+<!--
+ * @Author: HanJ
+ * @Date: 2024-05-09 22:17:10
+ * @LastEditors: Do not edit
+ * @LastEditTime: 2024-05-10 11:58:23
+ * @FilePath: \myTry\mytry\userprofile\templates\userprofile\login.html
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <!-- <link rel="icon" href="{% static 'img/logo.png' %}"> -->
+</head>
+<body>
+<div class="container">
+    <div class="col-4 shadow offset-4 bg-light" style="margin-top: 15%;">
+        <form class='p-5' action="." method="post">
+            {% csrf_token %}
+            <span class="text-danger">{{ error }}</span>
+            <div class="mb-3">
+                <label for="username" class="form-label">账号</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">密码</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="my-3 row">
+                <div class="col-6 justify-content-start">
+                    <a class="text-decoration-none float-start text-secondary py-2" href="{% url 'password_reset' %}">忘记密码？</a>
+               </div>
+                <div class="col-6 justify-content-end">
+                    <a class="text-decoration-none float-end text-secondary py-2" href="{% url 'userprofile:register' %}">没有账号？</a>
+                </div>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="submit" class="btn btn-primary">立即登录</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

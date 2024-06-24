@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海洋牧场可视化系统</title>
+    <script src="{% static 'UnderWater/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/Plugin/echarts.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/common.js' %}"></script>
+    <script src="{% static 'UnderWater/js/trend.js' %}"></script>
+
+
+    <!-- <link rel="css" href="{% static 'UnderWater/css/common.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'UnderWater/css/common.css' %}">
+
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+   <div class="left nav">
+        <ul>
+            <li><i class="nav_1"></i><a href="{% url 'MainInformation_user' %}">主要信息</a> </li>
+            <li class="nav_active"><i class="nav_2"></i><a href="{% url 'UnderWater_user' %}">水下系统</a></li>
+            
+
+            <li><i class="nav_3"></i><a href="{% url 'SmartCenter_user' %}">智能中心</a> </li>
+
+
+          </ul>
+   </div>
+    <div class="header_center left" style="position:relative">
+  
+        <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+        
+    </div>
+
+    <div class="right showTime text_right"></div>
+        <script>
+        function time() {  
+            var dt = new Date();  
+            var y = dt.getFullYear();  
+            var mt = dt.getMonth() + 1;  
+            var day = dt.getDate();  
+            var h = dt.getHours(); // 获取时  
+            var m = dt.getMinutes(); // 获取分  
+            var s = dt.getSeconds(); // 获取秒  
+    
+            // 为了确保月份、日期、小时、分钟和秒都是两位数  
+            mt = mt < 10 ? '0' + mt : mt;  
+            day = day < 10 ? '0' + day : day;  
+            h = h < 10 ? '0' + h : h;  
+            m = m < 10 ? '0' + m : m;  
+            s = s < 10 ? '0' + s : s;  
+    
+            // 更新显示时间  
+            document.querySelector(".showTime").innerHTML =  
+                "日期：" +  
+                y +  
+                "年" +  
+                mt +  
+                "月" +  
+                day +  
+                "日" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+                "时间：" +  
+                h +  
+                "时" +  
+                m +  
+                "分" +  
+                s +  
+                "秒";  
+    
+            // 设定定时器，循环运行  
+            setTimeout(time, 1000);  
+    }  
+  
+    // 页面加载完成后立即开始时间显示  
+    window.onload = time;  
+        </script>
+
+
+</header>
+
+<!--内容部分-->
+<!--左边-->
+<div class="con left" style="width:25%;">
+
+
+    <div class="div_any">
+        <!--鱼群数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 100px;">
+                <div class="div_any_title">鱼群数量</div>
+                <div class="left text01_div" style="width: 35%;">
+                    <p>鱼群数量</p>
+                    <p>1028</p>
+                </div>
+
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日新增</p>
+                    <p class="sky">10</p>
+                </div>
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日死亡</p>
+                    <p class="red">8</p>
+                </div>
+            
+            </div>
+        </div>
+
+
+
+        <!--环境得分计算-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 400px;">
+                <div class="div_any_title">海洋牧场环境感知得分</div>
+                
+                
+        
+
+            </div>
+        </div>
+        
+        <!--鱼群数量历史曲线-->
+        <div class="left div_any01" style="width: 98%;">
+            <div class="div_any_child" style="height: 360px;">
+                <div class="div_any_title">鱼群个体数量历史曲线</div>
+            </div>
+        </div>
+  
+
+    </div>
+</div>
+
+
+
+
+
+<!--中间-->
+<div class="con left" style="width: 53%;">
+    <div class="div_any"> 
+      <!--总数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+
+            </div>
+
+        </div>
+    
+      <!--鱼群属性曲线-->
+      <div class="left div_any01" style="width:100%;">
+        <div class="div_any_child" style="width:98%;position:relative;height: 360px;">
+            <div class="div_any_title">鱼群属性</div>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!--右侧-->
+<div class="con left" style="width: 22%;">
+    <div class="div_any">
+        <!--设备信息-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+                <div class="div_any_title">设备信息</div>
+            </div>
+        </div>
+
+
+        <!--鱼群种类占比-->
+        <div class="left div_any01" style="width: 98%;">
+            <div class="div_any_child" style="height: 360px;">
+                <div class="div_any_title">鱼群种类占比</div>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

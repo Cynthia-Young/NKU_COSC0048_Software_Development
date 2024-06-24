@@ -1,0 +1,336 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海洋牧场可视化系统</title>
+    <script src="{% static 'UnderWater/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/Plugin/echarts.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/common.js' %}"></script>
+    <!-- <script src="{% static 'UnderWater/js/trend.js' %}"></script> -->
+
+
+    <!-- <link rel="css" href="{% static 'UnderWater/css/common.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'UnderWater/css/common.css' %}">
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+   <div class="left nav">
+        <ul>
+            <li><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a> </li>
+            <li class="nav_active"><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a></li>
+            
+            <li><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a> </li>
+  
+            <!-- <li class="nav_active"><i class="nav_4"></i><a href="trend.html">智能中心</a> </li> -->
+            <li><i class="nav_4"></i><a href="{% url 'SmartCenter' %}">智能中心</a> </li>
+            <li><i class="nav_5"></i><a href="{% url 'BackManage' %}">后台管理</a> </li>
+        </ul>
+   </div>
+    <div class="header_center left" style="position:relative">
+  
+        <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+        
+    </div>
+
+    <div class="right showTime text_right"></div>
+        <script>
+        function time() {  
+            var dt = new Date();  
+            var y = dt.getFullYear();  
+            var mt = dt.getMonth() + 1;  
+            var day = dt.getDate();  
+            var h = dt.getHours(); // 获取时  
+            var m = dt.getMinutes(); // 获取分  
+            var s = dt.getSeconds(); // 获取秒  
+    
+            // 为了确保月份、日期、小时、分钟和秒都是两位数  
+            mt = mt < 10 ? '0' + mt : mt;  
+            day = day < 10 ? '0' + day : day;  
+            h = h < 10 ? '0' + h : h;  
+            m = m < 10 ? '0' + m : m;  
+            s = s < 10 ? '0' + s : s;  
+    
+            // 更新显示时间  
+            document.querySelector(".showTime").innerHTML =  
+                "日期：" +  
+                y +  
+                "年" +  
+                mt +  
+                "月" +  
+                day +  
+                "日" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+                "时间：" +  
+                h +  
+                "时" +  
+                m +  
+                "分" +  
+                s +  
+                "秒";  
+    
+            // 设定定时器，循环运行  
+            setTimeout(time, 1000);  
+    }  
+  
+    // 页面加载完成后立即开始时间显示  
+    window.onload = time;  
+        </script>
+
+
+</header>
+
+<!--内容部分-->
+<!--左边-->
+<div class="con left" style="width:25%;">
+
+
+    <div class="div_any">
+        <!--鱼群数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 100px;">
+                <div class="div_any_title">鱼群数量</div>
+                <div class="left text01_div" style="width: 35%;">
+                    <p>鱼群数量</p>
+                    <p>{{fishnum}}</p>
+                    <!-- <tr>
+                        <td>{{fishnum}}</td>
+                    </tr> -->
+                </div>
+
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日新增</p>
+                    <p class="sky">10</p>
+                </div>
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日死亡</p>
+                    <p class="red">8</p>
+                </div>
+            
+            </div>
+        </div>
+
+
+
+        <!--环境得分计算-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 400px;">
+                <div class="div_any_title">海洋牧场环境感知得分</div>
+                
+                
+        
+
+            </div>
+        </div>
+        
+        <!--文件下载-->
+        <div class="left div_any01" style="width: 98%;">
+            <div class="div_any_child" style="height: 360px;">
+                <div class="div_any_title">数据下载</div>
+                    <!-- 插入文本 -->
+                    <!-- <span style="font-size: larger; color: white; font-weight: bold; font-style: italic;">请点击按钮下载鱼群相关数据~</span> -->
+                     <!-- GIF图片插入 -->
+                    <div style="text-align:center; margin: 20px 0;">
+                        <img src="{% static 'UnderWater/images/download.gif' %}" alt="加载中..." style="max-width:100%; height:auto;">
+                    </div>
+                    <!-- <button id ="download-button"> Download CSV </button> -->
+                    <button class="download-btn" id="download-button" style="display: block; margin: 20px auto 0;"> Download CSV </button>
+                    <script>
+                        var downloadButton = document.getElementById('download-button');
+                        downloadButton.addEventListener('click', function() {
+                            // 发送AJAX请求获取数据
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('GET', '/download_data/', true);
+                            xhr.responseType = 'blob';
+                            xhr.onload = function() {
+                                //将相应内容转化为可下载的URL
+                                var blog = xhr.response;
+                                var url = window.URL.createObjectURL(blog);
+                                //创建一个隐藏的<a>元素，并将可下载 的URL赋值给 它的href属性
+                                var a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'fish_data.csv';
+                                //将<a>元素添加到DOM中
+                                document.body.appendChild(a);
+                                //模拟点击
+                                a.click();
+                                //清理URL对象
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            };
+                            xhr.send();
+
+                        });
+                    </script>
+            </div>
+        </div>
+  
+
+    </div>
+</div>
+
+
+
+
+
+<!--中间-->
+<div class="con left" style="width: 53%;">
+    <div class="div_any"> 
+      <!--总数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+
+            </div>
+
+        </div>
+    
+      <!--鱼群属性曲线-->
+      <div class="left div_any01" style="width:100%;">
+        <div class="div_any_child" style="width:98%;position:relative;height: 360px;">
+            <div class="div_any_title">鱼群属性</div>
+            
+
+                <!-- 曲线 -->
+                <div class="wave-container">
+                    <div id="fishPropertyChart" style="width: 100%; height: 300px;"></div> 
+                    <div class="wave">
+                        <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.3.2/echarts.min.js"></script>
+                        <script>
+                            // 页面加载完成后初始化图表
+                            document.addEventListener('DOMContentLoaded', function () {
+                                 // 存储所有鱼种的重量数据
+                                let fishWeights = {
+                                    'Bream': {{ Bream_weights|safe }},
+                                    'Roach': {{ Roach_weights|safe }},
+                                    'Whitefish': {{ Whitefish_weights|safe }},
+                                    'Parkki': {{ Parkki_weights|safe }},
+                                    'Perch': {{ Perch_weights|safe }},
+                                    'Pike': {{ Pike_weights|safe }},
+                                    'Smelt': {{ Smelt_weights|safe }},
+                                };
+                                function updateChartBySpecies(species) {
+                                    let array = fishWeights[species];
+                                    
+                                    let mean = array.reduce((a,b) => a + b) / array.length;
+                                    let variance = array.map(x => Math.pow(x - mean, 2)).reduce((a,b) => a + b) / array.length;
+                                    let StandardDeviation = Math.sqrt(variance);
+                                    let convertedData=[];
+                                    for(let x = mean - 3 * StandardDeviation; x <= mean + 3 * StandardDeviation; x++){
+                                        let y = 1/(StandardDeviation*Math.sqrt(2*(Math.PI)))*Math.exp(-(Math.pow(x-mean,2))/(2*(Math.pow(StandardDeviation,2))));
+                                        convertedData.push([x,y]);
+                                    }
+                                    let xdata = convertedData.map(item => item[0]);
+                                    let ydata = convertedData.map(item => item[1]);
+                    
+                                    var chart = echarts.init(document.getElementById('fishPropertyChart')); // 初始化ECharts实例
+                                    var option = {
+                                        xAxis: {
+                                            type: 'category',
+                                            // type: 'value',
+
+                                            data: xdata
+                                        },
+                                        yAxis: {
+                                            type: 'value'
+                                        },
+                                        series: [{
+                                            data: ydata,
+                                            type: 'line',
+                                            smooth: true
+                                        }]
+                                    };
+                                    // 应用配置到图表
+                                    chart.setOption(option);
+                                }
+                            
+                                // 绑定按钮点击事件
+                                document.querySelectorAll('.fish-buttons button').forEach(button => {
+                                    button.addEventListener('click', function() {
+                                        let species = this.getAttribute('data-species');
+                                        updateChartBySpecies(species);
+                                        document.querySelectorAll('.fish-buttons .btn').forEach(btn => btn.classList.remove('active'));
+                                        this.classList.add('active');
+                                    });
+                                });
+                                // 初始化图表，默认显示第一个鱼种（例如Bream）
+                                updateChartBySpecies(Object.keys(fishWeights)[0]);
+                                document.querySelectorAll('.fish-buttons .btn')[0].classList.add('active');
+                            });
+                     
+                        </script>
+                    </div>
+                </div >
+
+                   <!-- 按钮 -->
+                   <div class="fish-buttons">
+                    <!-- <div id="fishPropertyChart" style="width: 100%; height: 60px;"></div>  -->
+                    <button class="btn btn-1" data-species="Bream">Bream重量分布</button>
+                    <button class="btn btn-2" data-species="Roach">Roach重量分布</button>
+                    <button class="btn btn-3" data-species="Whitefish">Whitefish重量分布</button>
+                    <button class="btn btn-4" data-species="Parkki">Parkki重量分布</button>
+                    <button class="btn btn-5" data-species="Perch">Perch重量分布</button>
+                    <button class="btn btn-6" data-species="Pike">Pike重量分布</button>
+                    <button class="btn btn-7" data-species="Smelt">Smelt重量分布</button>
+                </div>
+
+
+                    
+                
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!--右侧-->
+<div class="con left" style="width: 22%;">
+    <div class="div_any">
+        <!--设备信息-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+                <div class="div_any_title">设备信息</div>
+            </div>
+        </div>
+
+
+        <!--鱼群种类占比-->
+        <div class="left div_any01" style="width: 98%;flex; justify-content: center; align-items: center;">
+            <div class="div_any_child" style="height: 360px;; width: 98%; display: flex; justify-content: center; align-items: center;">
+                <div class="div_any_title">鱼群种类占比</div>
+                <!-- <ul>
+                    {% for species in fish_counts %}
+                        <li>{{ species.Species }}: {{ species.count }} 条</li>
+                    {% endfor %}
+                    </ul> -->
+                    <div id="main" style="width: 98%;height:360px;"></div>
+                    <script type="text/javascript">
+                        // 初始化 echarts 实例
+                        var myChart = echarts.init(document.getElementById('main'));
+                        // 获取由视图传递过来的数据
+                        var chartData = {{ chart_data|safe }};
+                        myChart.setOption({
+                            series : [{
+                                    name: '鱼群占比',
+                                    type: 'pie',    // 设置图表类型为饼图
+                                    radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                                    label: {
+                                        position: 'outside',
+                                        formatter: '{b}:{c} ({d}%)'
+                                    },
+
+                                    data:chartData
+                                }
+                            ]
+                        })
+                    </script>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

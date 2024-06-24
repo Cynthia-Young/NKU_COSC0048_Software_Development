@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据中心</title>
+    <link href="{% static 'DataCenter/css/common.css' %}" rel="stylesheet">
+    <script src="{% static 'DataCenter/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'DataCenter/js/echarts.min.js' %}"></script>
+    <!-- <script src="../scripts/Plugin/bmap.min.js"></script> -->
+    <!-- <script src="http://api.map.baidu.com/api?v=2.0&ak=LelFSt6BfykGf8m3PB5zr8LaXAG2cMg6"></script> -->
+    <script src="{% static 'DataCenter/js/common.js' %}"></script>
+    <!--script src="{% static 'DataCenter/js/NCDindex.js' %}"></script-->
+    <!-- <script src="../scripts/echarts.js"></script> -->
+
+
+    <script src="{% static 'DataCenter/js/echarts.js'%}"></script>
+     <script src="{% static 'DataCenter/js/chain.js'%}"></script>
+     <script src="{% static 'DataCenter/js/jquery-3.5.1.js'%}"></script>
+
+
+
+
+
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+    <div class="left nav">
+        <ul>
+            <li><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a> </li>
+            <li><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a></li>
+            <li class="nav_active"><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a> </li>
+            <li><i class="nav_4"></i><a href="{% url 'SmartCenter' %}">智能中心</a> </li>
+            <li><i class="nav_5"></i><a href="{% url 'BackManage' %}">后台管理</a> </li>
+        </ul>
+    </div>
+    <div class="header_center left" style="position:relative">
+        <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+    </div>
+    <div class="right showTime text_right"></div>
+    <script>
+    function time() {  
+        var dt = new Date();  
+        var y = dt.getFullYear();  
+        var mt = dt.getMonth() + 1;  
+        var day = dt.getDate();  
+        var h = dt.getHours(); // 获取时  
+        var m = dt.getMinutes(); // 获取分  
+        var s = dt.getSeconds(); // 获取秒  
+
+        // 为了确保月份、日期、小时、分钟和秒都是两位数  
+        mt = mt < 10 ? '0' + mt : mt;  
+        day = day < 10 ? '0' + day : day;  
+        h = h < 10 ? '0' + h : h;  
+        m = m < 10 ? '0' + m : m;  
+        s = s < 10 ? '0' + s : s;  
+
+        // 更新显示时间  
+        document.querySelector(".showTime").innerHTML =  
+            "日期：" +  
+            y +  
+            "年" +  
+            mt +  
+            "月" +  
+            day +  
+            "日" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+            "时间：" +  
+            h +  
+            "时" +  
+            m +  
+            "分" +  
+            s +  
+            "秒";  
+
+        // 设定定时器，循环运行  
+        setTimeout(time, 1000);  
+}  
+
+// 页面加载完成后立即开始时间显示  
+window.onload = time;  
+    </script>
+
+
+</header>
+
+<!--右下角显示实时日期和时间-->
+<!-- <!DOCTYPE html> -->
+<!-- <html> -->
+<!-- <head>
+    <style>
+        #date_time {
+            /* position: fixed;
+            top: 0;
+            right: 0; */
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+        }
+    </style>
+</head> -->
+<!-- <div id="date_time"></div> -->
+
+    <!-- <script>
+        function showDateTime() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth() + 1;
+            var date = now.getDate();
+            var date_time = year + "年" + month + "月" + date + "日 " + " " + now.toLocaleTimeString();
+            document.getElementById('date_time').innerHTML = date_time;
+        }
+        setInterval(showDateTime, 1000);
+    </script> -->
+
+<!--内容部分-->
+<div class="con left">
+    <!--数据总概-->
+<!--    <div class="con_div">
+        <div class="con_div_text left">
+            <div class="con_div_text01 left">
+                <img src="../images/info_1.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>慢病总人次(人)</p>
+                    <p>1235</p>
+                </div>
+            </div>
+            <div class="con_div_text01 right">
+                <img src="../images/info_2.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>当月就诊人次(人)</p>
+                    <p>235</p>
+                </div>
+            </div>
+        </div>
+        <div class="con_div_text left">
+            <div class="con_div_text01 left">
+                <img src="../images/info_3.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>总门诊数(人)</p>
+                    <p class="sky">12356</p>
+                </div>
+            </div>
+            <div class="con_div_text01 right">
+                <img src="../images/info_4.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>当月门诊数(人)</p>
+                    <p class="sky">12356</p>
+                </div>
+            </div>
+        </div>
+        <div class="con_div_text left">
+
+            <div class="con_div_text01 left">
+                <img src="../images/info_5.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>总住院数(人)</p>
+                    <p class="org">12356</p>
+                </div>
+            </div>
+            <div class="con_div_text01 right">
+                <img src="../images/info_6.png" class="left text01_img"/>
+                <div class="left text01_div">
+                    <p>当月住院数(人)</p>
+                    <p class="org">12356</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <!--统计分析图-->
+    <div class="div_any">
+        <div class="left div_any01">
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_1.png' %}">数据总量</div>
+                <p id="pieChart" class="p_chart"></p>
+            </div>
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_2.png' %}">硬件信息统计</div>
+                <p id="histogramChart" class="p_chart"></p>
+            </div>
+        </div>
+        <div class="div_any02 left ">
+            <div class="div_any_child div_height">
+                <div class="div_any_title any_title_width"><img src="{% static 'DataCenter/images/title_0.png' %}">数据中心分布</div>
+
+                <div id="main" style="flex-grow: 1; width: 90%; height: 90%; padding-left: 5.0%; padding-top: 2.0%;"></div>
+            </div>
+        </div>
+        <div class="right div_any01">
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_3.png' %}">数据类型统计</div>
+                <p id="lineChart" class="p_chart"></p>
+            </div>
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_4.png' %}">传感器信息</div>
+                <p id="lineChart2" class="p_chart"></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+ <script>
+    var myChart = echarts.init(document.getElementById("main"));
+
+$(function() {
+    // 获取表格对象
+    let table = $("#tbody");
+    // 发生ajax请求，到json文件，data为返回的数据，将数据封装到空数组中；直接拿来用即可
+    $.ajax({
+        url: "{% static 'DataCenter/json/Servers.json' %}",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            console.log(data); // 检查返回的数据
+            let res = [];
+            for (let i = 0; i < data.length; i++) {
+                res.push({
+                    name: data[i].name,
+                    value: data[i].value,
+                    sales: data[i].Sales
+                });
+            }
+            dealWithData(res);
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX请求失败: ", status, error); // 检查请求是否失败
+            alert("数据获取失败！");
+        }
+    });
+});
+
+function dealWithData(data) {
+    let dataValue = data;
+    let option = {
+        // 设置一个标题
+        title: {
+            text: '',
+            x: 'center',
+            textStyle: {
+                color: '#fff',
+                fontSize: "40"
+            }
+        },
+        // 鼠标划过省份下弹框
+        tooltip: {
+            show: true,
+            triggerOn: 'click' // 点击生效
+        },
+        geo: {
+            map: 'china', // 必须写
+            roam: false, // 拖拽功能；自选关闭开启
+            zoom: 1.235, // 地图缩放比例
+            center: [105, 36], // 地图位置
+            // 地图省份的样式；包括板块颜色和边框颜色
+            itemStyle: {
+                areaColor: '#e0ffff',
+                borderColor: "#835f5f",
+            },
+            // 省份字体样式；包括是否展示，字体大小和颜色
+            label: {
+                normal: {
+                    show: true,
+                    fontSize: "11",
+                    color: "rgb(128, 0, 128)",
+                    fontWeight: 'bold'
+                }
+            },
+            // 鼠标划过的高亮设置；包括省份板块颜色和字体等
+            emphasis: {
+                itemStyle: {
+                    areaColor: '#d0a3a3',
+                },
+                label: {
+                    show: true,
+                    color: "rgb(255,255,255)"
+                }
+            }
+        },
+        series: [
+            // 涟漪特效
+            {
+                name: "数据中心",
+                type: "effectScatter",
+                coordinateSystem: "geo",
+                data: dataValue, // 传入的地图点数据
+                symbolSize: 6, // 涟漪大小
+                showEffectOn: "render",
+                // 涟漪效应
+                rippleEffect: {
+                    brushType: "stroke",
+                    color: "#f13434",
+                    period: 10, // 周期
+                    scale: 10 // 规模
+                },
+                hoverAnimation: true, // 悬停动画
+                // 地图点样式
+                label: {
+                    formatter: "{b}",
+                    position: "top",
+                    show: true,
+                    fontSize: "10",
+                },
+                itemStyle: {
+                    color: "#f13434",
+                    shadowBlur: 2,
+                    shadowColor: "#333"
+                },
+                // 鼠标点击散点的下弹框
+                tooltip: {
+                    show: true,
+                    triggerOn: "click",
+                    formatter: function(data1) {
+                        console.log(data1);
+                        let data2 = data1.data;
+                        return "<b>数据中心<b><br>" + data2.name + data2.sales;
+                    }
+                },
+                zlevel: 1
+            }
+        ]
+    };
+    myChart.setOption(option);
+}
+
+
+
+ </script>
+
+
+
+
+
+</html>

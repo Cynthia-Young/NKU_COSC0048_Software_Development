@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}文章详情{% endblock %}
+{% block content %}
+    <div class="container shadow">
+        <div class="pt-4">
+            <h1>{{ article.title }}</h1>
+            <small class="text-secondary"><i class="bi bi-person"></i> 作者 {{ article.author }}</small>
+            <small class="text-secondary mx-4"><i class="bi bi-clock"></i> 发表于 {{ article.created }}</small>
+            {% if article.author.username == user.username%}
+            <a href="#" class="text-decoration-none float-end text-danger ms-3"
+               onclick="if(confirm('确定要删除这篇文章吗？')) location.href='{% url "article:article-delete" article.id %}'">删除</a>
+            <a href="{% url "article:article-update" article.id %}" class="text-decoration-none float-end">修改</a>
+            {% endif %}
+        </div>
+        <div class="mt-2 border-top py-2">
+            {{ article.body|safe }}
+        </div>
+    </div>
+    <script>
+        // 将表格样式替换为bootstrap表格
+        $('.container table').addClass('table table-bordered');
+        $('.container thead').addClass('thead-light');
+        // 为代码块添加圆角和内外边距
+        $('.codehilite').addClass('rounded-3 p-3 my-3');
+    </script>
+{% endblock %}

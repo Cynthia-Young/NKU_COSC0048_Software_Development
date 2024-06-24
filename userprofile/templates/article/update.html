@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}文章修改{% endblock %}
+{% block content %}
+    <div class="container">
+        <form method="post" action="." class="mt-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">文章标题</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ article.title }}">
+            </div>
+            <div class="mb-3">
+                <label for="body" class="form-label">文章正文</label>
+                <textarea type="text" class="form-control" rows="12" id="body" name="body">{{ article.body }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">提交修改</button>
+        </form>
+    </div>
+{% endblock %}
