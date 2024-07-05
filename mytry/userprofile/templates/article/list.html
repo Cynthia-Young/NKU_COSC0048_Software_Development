@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            {% for article in articles %}
+                <div class="col-4 mb-4">
+                    <div class="card h-250">
+                        <div class="card-header">
+                            <h5>{{ article.title }}</h5>
+                            <small class="text-secondary"><i class="bi bi-clock"></i> 发表于 {{ article.created }}</small>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ article.body|slice:'100' }}</p>
+                            <!-- slice:'100'是Django的过滤器语法，表示取出正文的前100个字符，避免摘要太长 -->
+                            <a href="{% url 'article:article-detail' article.id %}" class="btn btn-primary">阅读本文</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

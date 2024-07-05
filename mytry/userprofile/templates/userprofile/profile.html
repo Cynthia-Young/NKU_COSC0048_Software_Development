@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}个人中心{% endblock %}
+{% block style %}
+    .box{
+        position: relative;
+        overflow: hidden;
+    }
+    .box img{
+        width: 100%;
+        height: auto;
+    }
+    .box .box-content{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: #fff;
+        text-align: center;
+        padding: 40% 20px;
+        background: rgba(0,0,0,0.6);
+        transform: rotate(-90deg);
+        transform-origin: left top 0;
+        transition: all 0.50s ease 0s;
+    }
+    .box .read{
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+        display: block;
+        letter-spacing:2px;
+        transform: rotate(180deg);
+        transform-origin: right top 0;
+        transition: all 0.3s ease-in-out 0.2s;
+    }
+    .box .read:hover{
+        color: #e8802e;
+        text-decoration: none;
+    }
+    .box:hover .box-content,
+    .box:hover .read {
+        transform:rotate(0deg);
+    }
+    @media screen and (max-width: 990px){
+        .box{ margin-bottom:20px; }
+    }
+    @media screen and (max-width: 359px){
+        .box .box-content{ padding: 10% 20px; }
+    }
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <form action="." method="post" enctype="multipart/form-data" class="visually-hidden">
+            {% csrf_token %}
+            <input class="form-control" type="file" name="avatar" id="upload_avatar">
+            <button type="submit" id="submit"></button>
+        </form>
+        <div class="row shadow mt-4 py-3">
+            <div class="col-2">
+                <div class="box">
+                    <img src="{{ user.avatar.url }}" class="img-thumbnail mx-auto d-block" alt="头像">
+                    <div class="box-content">
+                        <span class="read" onclick="x()">更换头像</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-10">
+                <h1>{{ user.username }}</h1>
+                <p><i class="bi bi-calendar-check-fill"></i> 入园时间：{{ user.date_joined }}</p>
+                <p><i class="bi bi-calendar-check"></i> 上次登录：{{ user.last_login }}</p>
+                <p><i class="bi bi-envelope-fill"></i> 注册邮箱：{{ user.email }}</p>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-8 shadow">
+                {% for article in articles %}
+                    <div class="row">
+                        <div class="card border-0 mt-3 h-250">
+                            <div class="card-header">
+                                <h5>{{ article.title }}</h5>
+                                <small class="text-secondary"><i class="bi bi-clock"></i> 发表于 {{ article.created }}
+                                </small>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ article.body|slice:'100' }}</p>
+                                <!-- slice:'100'是Django的过滤器语法，表示取出正文的前100个字符，避免摘要太长 -->
+                                <a href="{% url 'article:article-detail' article.id %}" class="btn btn-primary">阅读本文</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-3 offset-1 shadow">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        function x() {
+            const $input = $('#upload_avatar');
+            $input.click();
+            $input.change(function () {
+                //如果value不为空，调用文件加载方法
+                if($(this).val() !== ""){
+                    $("#submit").click();
+                }
+            })
+        }
+    </script>
+{% endblock content %}

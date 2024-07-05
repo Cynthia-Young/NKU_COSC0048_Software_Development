@@ -1,0 +1,639 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海洋牧场可视化系统</title>
+    <link href="{% static 'MainInformation/css/common.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'MainInformation/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'MainInformation/js/Plugin/echarts.min.js' %}"></script>
+    <script src="{% static 'MainInformation/js/Plugin/bmap.min.js' %}"></script>
+    <script src="{% static 'MainInformation/js/common.js' %}"></script>
+    <script src="{% static 'MainInformation/js/NCDindex.js' %}"></script>
+    <script src="{% static 'MainInformation/js/echarts.js'%}"></script>
+</head>
+
+
+<body>
+    <header class="header left">
+        <div class="left nav">
+            <ul>
+                <li class="nav_active"><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a></li>
+                <li><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a></li>
+                <li><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a></li>
+                <li><i class="nav_4"></i><a href="{% url 'SmartCenter' %}">智能中心</a></li>
+                <li><i class="nav_5"></i><a href="{% url 'BackManage' %}">管理中心</a></li>
+            </ul>
+        </div>
+        <div class="header_center left" style="position:relative">
+            <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+        </div>
+        <div class="right showTime text_right"></div>
+    </header>
+
+
+    <div class="con left">
+        <div class="div_any">
+            <div class="div_any04 left">
+                <div class="div_any_child div_height">
+                    <div class="div_any_title">
+                        <img src="{% static 'MainInformation/images/title_1.png' %}">监控视频
+                    </div>
+                    <div class="empty-row"></div>
+                    <div class="button-container">
+                        <button id="video1" onclick="changeVideo('video1')" class="blue-button active">监控1</button>
+                        <button id="video2" onclick="changeVideo('video2')" class="blue-button">监控2</button>
+                        <button id="video3" onclick="changeVideo('video3')" class="blue-button">监控3</button>
+                        <button id="video4" onclick="changeVideo('video4')" class="blue-button">监控4</button>
+                    </div>
+                    <div class="video-container">
+                        {% if on %}
+                        <video id="video1" src="{% static 'MainInformation/videos/video1.mp4' %}" loop muted></video>
+                        <video id="video2" src="{% static 'MainInformation/videos/video2.mp4' %}" loop muted></video>
+                        <video id="video3" src="{% static 'MainInformation/videos/video3.mp4' %}" loop muted></video>
+                        <video id="video4" src="{% static 'MainInformation/videos/video4.mp4' %}" loop muted></video>
+                        {% else %}
+                        <img src="{% static 'MainInformation/images/closed.jpg' %}" alt="视频已关闭" style="width: 85%; height: 90%;">
+                        {% endif %}
+                    </div>
+                   
+                    
+                    <div class="table-container">
+                        <div class="table_p" style="height: 85%; margin-top: 0%;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="font-size: 15;">导入数据工作台</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="button-container">
+                                                {% csrf_token %}
+                                                <input id="upload" type="file" style="width: 50%" name="file" id="filename">
+                                                <button class="blue-button active" type="button" onclick="Upload()">导入历史水文数据</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="left div_any05">
+                <div class="div_any_child">
+                    <div class="div_any_title">
+                        <img src="{% static 'MainInformation/images/title_1.png' %}">今日水文气象
+                    </div>
+                    <div id="histogramChart0" style="width: 90%; height: 100%; margin: 5% auto;"></div>
+                </div>
+                <div class="div_any_child">
+                    <div class="div_any_title">
+                        <img src="{% static 'MainInformation/images/title_2.png' %}">定位
+                    </div>
+                    <div class="empty-row"></div>
+                    <div class="empty-row"></div>
+                    <div id="wrapper"></div>
+                    <style>
+                        #wrapper{
+                            width: 85%;
+                            height: 75%;
+                            margin-left: auto;
+                            margin-right: auto;
+                            display: block;
+                            text-align: center;
+                            border: 1px solid #034c6a;
+                            box-sizing: border-box;
+                        }
+                    </style>
+
+                    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.8&key=ab69b13db701db1bfd29d1cbd258da40"></script> 
+
+                    <script>
+                        //初始化地图插件
+                        window.onload = function(){
+                            var map = new AMap.Map('wrapper', {
+                                zoom: 17,
+                                dragEnable: false, // 禁用拖拽功能
+                                zoomEnable: false, // 禁用缩放功能
+                                center: [117.17325638567854, 39.103630700102] // 新开湖
+                            });
+                            var satelliteLayer = new AMap.TileLayer.Satellite({
+                                zIndex: 9
+                            });
+                            map.add(satelliteLayer);//添加图层到地图
+                        }
+                    </script>
+                </div>
+            </div>
+            <div class="right div_any05">
+                <div class="div_any_child">
+                    <div class="div_any_title">
+                        <img src="{% static 'MainInformation/images/title_3.png' %}">历史记录
+                    </div>
+                    <div class="empty-row"></div>
+                    <div class="select-container">
+                        <select id="timeRangeSelect">
+                            <option value="day">近两日</option>
+                            <option value="week">近一周</option>
+                            <option value="month">近一月</option>
+                        </select>
+                        <select id="parameterSelect">
+                            <option value="watertemperature">水温</option>
+                            <option value="ph">ph</option>
+                            <option value="dissolved_oxygen">溶解氧</option>
+                            <option value="conductivity">电导率</option>
+                            <option value="turbidity">浊度</option>
+                            <option value="permanganate_index">高猛酸盐</option>
+                            <option value="ammonia_nitrogen">氨氮</option>
+                            <option value="total_phosphorus">总磷</option>
+                            <option value="total_nitrogen">总氮</option>
+                        </select>
+                    </div>
+                    <div id="lineChart" style="width: 90%; height: 90%; margin: 1% auto;"></div>
+                </div>
+                <div class="div_any_child">
+                    <div class="div_any_title">
+                        <img src="{% static 'MainInformation/images/title_4.png' %}">设备状态
+                    </div>
+                    <div class="empty-row"></div>
+                    <div class="button-container">
+                        <button class="blue-button active" id='test1' onclick="changePage('test1')" >主控</button>
+                        <button class="blue-button" id='test2' onclick="changePage('test2')" >时间校准</button>
+                        <button class="blue-button" id='test4' onclick="changePage('test4')" >告警</button>
+
+                    </div>
+
+                    <div class="empty-row"></div>
+                    <div class="button-container" id='test1Div' style="height: 85%; margin-top: 0%;">
+                        <div class="table_p" style="height: 85%; margin-top: 0%;">
+                            <table style="height: 85%; margin-top: 0%; table-layout: fixed;">
+                                <tbody>
+                                    <tr>
+                                        <td>监控设备</td>
+                                        <td>
+                                            <label class="switch">
+                                                <input type="checkbox" onclick="Change('{{on}}')" {% if on %}checked{% endif %}>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </td>
+                                        <td>{{abn}}</td>
+                                    </tr>
+                                    <tr><td></td><td></td></tr>
+                                    <tr>
+                                        <td>水质检测设备</td>
+                                        <td>
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </td>
+                                        <td>状态均良好</td>
+                                    </tr>
+                                    <tr><td></td><td></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="button-container gray-text" id='test2Div' style="display: none;">
+                        <h1>当前时间</h1>
+                        <p>纽约时间: <span id="datetime-America/New_York"></span></p>
+                        <p>伦敦时间: <span id="datetime-Europe/London"></span></p>
+                        <p>上海时间: <span id="datetime-Asia/Shanghai"></span></p>
+                        <p>悉尼时间: <span id="datetime-Australia/Sydney"></span></p>
+                        <div class="empty-row"></div>
+                        <button class="green-button" onclick="updateTimes()">校准时间</button>
+                    </div>
+
+                    <div class="button-container" id='test4Div' style="display: none;">
+                        <div class="decision warning">
+                            {% if warning_oxygen == '是' %}
+                                <p class="warning">警告：溶解氧水平低，需关注鱼类健康！建议开启增氧设备、进行部分换水操作、调整养殖密度。</p>
+                            {% endif %}
+                            {% if warning_temperature == '是' %}
+                                <p class="warning">警告：水温过高，可能影响水质与生物状态！建议加强监测与记录、优化饲料管理。</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var warning = '{{warning}}'; // 假设warning是从模板引擎传递过来的变量
+        var button = document.getElementById('test4');
+        if (warning == '0') {
+            button.style.color = 'white';
+        } else {
+            button.style.color = 'red';
+        }
+    });
+
+    function getD1(region) {
+            var date = new Date();
+            var options = {
+                timeZone: region,
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+            };
+            var formatter = new Intl.DateTimeFormat([], options);
+            var d1 = formatter.format(date);
+            document.getElementById("datetime-" + region).innerHTML = d1;
+        }
+
+        function updateTimes() {
+            getD1('America/New_York');
+            getD1('Europe/London');
+            getD1('Asia/Shanghai');
+            getD1('Australia/Sydney');
+        }
+
+        setInterval(updateTimes, 1000);
+
+    // 更新时间显示
+    function updateTime() {
+        var dt = new Date();
+        var y = dt.getFullYear();
+        var mt = (dt.getMonth() + 1).toString().padStart(2, '0');
+        var day = dt.getDate().toString().padStart(2, '0');
+        var h = dt.getHours().toString().padStart(2, '0');
+        var m = dt.getMinutes().toString().padStart(2, '0');
+        var s = dt.getSeconds().toString().padStart(2, '0');
+        document.querySelector(".showTime").innerHTML = "日期：" + y + "年" + mt + "月" + day + "日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间：" + h + "时" + m + "分" + s + "秒";
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // 颜色数组
+    var myColor = ['#1089E7', '#F57474', '#56D0E3', '#F8B448', '#8B78F6'];
+
+    // 初始化图表
+    var histogramChart0 = echarts.init(document.getElementById('histogramChart0'));
+
+    // 从数据库获取数据的函数
+    function fetchDataFromDatabase(water) {
+        return {
+            yAxisData: ['水温(℃)', 'pH', '溶解氧(mg/L)', '电导率(μS/cm)', '浊度(NTU)', '高锰酸盐(mg/L)', '氨氮(mg/L)', '总磷(mg/L)', '总氮(mg/L)'],
+            seriesData1: water,
+            seriesData2: [17, 7.36, 9.89, 250, 53.5, 6.41, 0.29, 0.12, 2.02]
+        };
+    }
+
+    // 获取数据并设置图表选项
+    var flag = "{{today_water}}";
+    var water_list = flag == 'None' ? [0, 0, 0, 0, 0, 0, 0, 0, 0] : [
+        "{{ today_water.temperature }}",
+        "{{ today_water.ph }}",
+        "{{ today_water.dissolved_oxygen }}",
+        "{{ today_water.conductivity }}",
+        "{{ today_water.turbidity }}",
+        "{{ today_water.permanganate_index }}",
+        "{{ today_water.ammonia_nitrogen }}",
+        "{{ today_water.total_phosphorus }}",
+        "{{ today_water.total_nitrogen }}"
+    ];
+    var data = fetchDataFromDatabase(water_list);
+    histogramChart0.setOption({
+        grid: {
+            top: '10%',
+            left: '40%',
+            right: '20%'
+        },
+        xAxis: { show: false },
+        yAxis: [{
+            show: true,
+            data: data.yAxisData,
+            inverse: true,
+            axisLine: { show: false },
+            splitLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: {
+                color: '#fff',
+                formatter: (value, index) => {
+                    return [
+                        `{lg|${index + 1}}  ` + '{title|' + value + '} '
+                    ].join('\n')
+                },
+                rich: {
+                    lg: {
+                        backgroundColor: '#339911',
+                        color: '#fff',
+                        borderRadius: 15,
+                        align: 'center',
+                        width: 15,
+                        height: 15
+                    }
+                }
+            }
+        }, {
+            show: true,
+            inverse: true,
+            data: data.seriesData1,
+            axisLabel: {
+                textStyle: {
+                    fontSize: 12,
+                    color: '#fff'
+                }
+            },
+            axisLine: { show: false },
+            splitLine: { show: false },
+            axisTick: { show: false }
+        }],
+        series: [{
+            name: '条',
+            type: 'bar',
+            yAxisIndex: 0,
+            data: data.seriesData1.map((value, index) => value / data.seriesData2[index]),
+            barWidth: 10,
+            itemStyle: {
+                normal: {
+                    barBorderRadius: 20,
+                    color: function(params) {
+                        var num = myColor.length;
+                        return myColor[params.dataIndex % num];
+                    }
+                }
+            },
+            label: {
+                normal: {
+                    show: false,
+                    position: 'inside',
+                    formatter: '{c}%',
+                    fontSize: 12
+                }
+            }
+        }, {
+            name: '框',
+            type: 'bar',
+            yAxisIndex: 1,
+            barGap: '-100%',
+            data: data.seriesData2.map((value, index) => value / data.seriesData2[index]),
+            barWidth: 15,
+            itemStyle: {
+                normal: {
+                    color: 'none',
+                    borderColor: '#00c1de',
+                    borderWidth: 3,
+                    barBorderRadius: 15
+                }
+            }
+        }]
+    });
+
+    // 上传文件
+    function Upload() {
+        var fileInput = document.getElementById('upload').files[0];
+        if (fileInput) {
+            var formData = new FormData();
+            formData.append('file', fileInput);
+            fetch('./upload', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            }).then(data => {
+                console.log('Success:', data);
+                location.reload();
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        } else {
+            alert("请选择上传文件！");
+        }
+    }
+
+    function Change(state){
+            var videos = document.getElementsByTagName('video');
+            buttons = document.getElementsByTagName('button');
+            var formData = new FormData();
+            formData.append('on-off', state);
+            fetch('./on-off', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'), // 获取CSRF token
+                },
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // 在这里添加页面刷新的代码
+                location.reload(); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        }
+
+    // 获取CSRF token
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 初始化折线图
+    var lineChart = echarts.init(document.getElementById('lineChart'));
+
+    // 图表数据
+    var chartData = {
+        waterColumn: {
+            'watertemperature': '水温(℃)',
+            'ph': 'pH',
+            'dissolved_oxygen': '溶解氧(mg/L)',
+            'conductivity': '电导率(μS/cm)',
+            'turbidity': '浊度(NTU)',
+            'permanganate_index': '高锰酸盐(mg/L)',
+            'ammonia_nitrogen': '氨氮(mg/L)',
+            'total_phosphorus': '总磷(mg/L)',
+            'total_nitrogen': '总氮(mg/L)'
+        },
+        times: [
+            {% for item in all_water %}
+                '{{ item.time }}',
+            {% endfor %}
+        ],
+        waterData: {
+            'watertemperature': [
+                {% for item in all_water %}
+                    '{{ item.temperature }}',
+                {% endfor %}
+            ],
+            'ph': [
+                {% for item in all_water %}
+                    '{{ item.ph }}',
+                {% endfor %}
+            ],
+            'dissolved_oxygen': [
+                {% for item in all_water %}
+                    '{{ item.dissolved_oxygen }}',
+                {% endfor %}
+            ],
+            'conductivity': [
+                {% for item in all_water %}
+                    '{{ item.conductivity }}',
+                {% endfor %}
+            ],
+            'turbidity': [
+                {% for item in all_water %}
+                    '{{ item.turbidity }}',
+                {% endfor %}
+            ],
+            'permanganate_index': [
+                {% for item in all_water %}
+                    '{{ item.permanganate_index }}',
+                {% endfor %}
+            ],
+            'ammonia_nitrogen': [
+                {% for item in all_water %}
+                    '{{ item.ammonia_nitrogen }}',
+                {% endfor %}
+            ],
+            'total_phosphorus': [
+                {% for item in all_water %}
+                    '{{ item.total_phosphorus }}',
+                {% endfor %}
+            ],
+            'total_nitrogen': [
+                {% for item in all_water %}
+                    '{{ item.total_nitrogen }}',
+                {% endfor %}
+            ]
+        }
+    };
+
+    // 更新图表
+    function updateChart() {
+        var time = document.getElementById('timeRangeSelect').value;
+        var Parameter = document.getElementById('parameterSelect').value;
+        var time_list = [];
+        var data_list = [];
+        var columnName = chartData.waterColumn[Parameter];
+
+        if (time == 'day') {
+            for (var i = 0; i < 2 && i < "{{water_num}}"; i++) {
+                time_list.push(chartData.times[i].substring(0, 10));
+                data_list.push(chartData.waterData[Parameter][i]);
+            }
+        } else if (time == 'week') {
+            for (var i = 0; i < 8 && i < "{{water_num}}"; i++) {
+                time_list.push(chartData.times[i].substring(0, 10));
+                data_list.push(chartData.waterData[Parameter][i]);
+            }
+        } else if (time == 'month') {
+            for (var i = 0; i < 32 && i < "{{water_num}}"; i++) {
+                time_list.push(chartData.times[i].substring(0, 10));
+                data_list.push(chartData.waterData[Parameter][i]);
+            }
+        }
+        time_list = time_list.reverse();
+        data_list = data_list.reverse();
+        var color_list = ["#87cefa", "#ff7f50", "#32cd32", "#da70d6"];
+
+        lineChart.setOption({
+            color: [color_list[columnName.length % 4]],
+            legend: {
+                show: false,
+                x: 'center',
+                textStyle: {
+                    color: '#ffffff'
+                },
+                data: columnName
+            },
+            calculable: false,
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a}<br/>{b}<br/>{c}"
+            },
+            xAxis: [{
+                type: 'category',
+                data: time_list,
+                axisLine: {
+                    lineStyle: {
+                        color: '#034c6a'
+                    }
+                },
+                splitLine: {
+                    show: false
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#fff'
+                    },
+                    rotate: 35
+                }
+            }],
+            yAxis: [{
+                type: 'value',
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: '#034c6a'
+                    }
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#fff'
+                    },
+                    formatter: function (value) {
+                        return value;
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        width: 0,
+                        type: 'solid'
+                    }
+                }
+            }],
+            grid: {
+                left: '5%',
+                right: '5%',
+                bottom: '20%',
+                containLabel: true
+            },
+            series: [{
+                name: columnName,
+                type: 'line',
+                smooth: true,
+                itemStyle: {
+                    lineStyle: {
+                        shadowColor: 'rgba(0,0,0,0.4)'
+                    }
+                },
+                data: data_list
+            }]
+        });
+    }
+
+    document.getElementById('timeRangeSelect').addEventListener('change', updateChart);
+    document.getElementById('parameterSelect').addEventListener('change', updateChart);
+
+    updateChart();
+</script>
+
+
+</html>

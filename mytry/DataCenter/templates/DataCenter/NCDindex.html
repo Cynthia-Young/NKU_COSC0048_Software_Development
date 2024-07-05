@@ -1,0 +1,466 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据中心</title>
+    <link href="{% static 'DataCenter/css/common.css' %}" rel="stylesheet">
+    <script src="{% static 'DataCenter/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'DataCenter/js/echarts.min.js' %}"></script>
+    <!-- <script src="../scripts/Plugin/bmap.min.js"></script> -->
+    <!-- <script src="http://api.map.baidu.com/api?v=2.0&ak=LelFSt6BfykGf8m3PB5zr8LaXAG2cMg6"></script> -->
+    <script src="{% static 'DataCenter/js/common.js' %}"></script>
+    <!--script src="{% static 'DataCenter/js/NCDindex.js' %}"></script-->
+    <!-- <script src="../scripts/echarts.js"></script> -->
+
+
+    <script src="{% static 'DataCenter/js/echarts.js'%}"></script>
+     <script src="{% static 'DataCenter/js/chain.js'%}"></script>
+     <script src="{% static 'DataCenter/js/jquery-3.5.1.js'%}"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/J5f5jU1wFzgW6xZI6loz6lQzX0nQJvzW9VcZc" crossorigin="anonymous">
+
+
+
+
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+    <div class="left nav">
+        <ul>
+            <li><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a> </li>
+            <li><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a></li>
+            <li class="nav_active"><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a> </li>
+            <li><i class="nav_4"></i><a href="{% url 'SmartCenter' %}">智能中心</a> </li>
+            <li><i class="nav_5"></i><a href="{% url 'BackManage' %}">后台管理</a> </li>
+        </ul>
+    </div>
+    <div class="header_center left" style="position:relative">
+        <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+    </div>
+    <div class="right showTime text_right"></div>
+    <script>
+    function time() {  
+        var dt = new Date();  
+        var y = dt.getFullYear();  
+        var mt = dt.getMonth() + 1;  
+        var day = dt.getDate();  
+        var h = dt.getHours(); // 获取时  
+        var m = dt.getMinutes(); // 获取分  
+        var s = dt.getSeconds(); // 获取秒  
+
+        // 为了确保月份、日期、小时、分钟和秒都是两位数  
+        mt = mt < 10 ? '0' + mt : mt;  
+        day = day < 10 ? '0' + day : day;  
+        h = h < 10 ? '0' + h : h;  
+        m = m < 10 ? '0' + m : m;  
+        s = s < 10 ? '0' + s : s;  
+
+        // 更新显示时间  
+        document.querySelector(".showTime").innerHTML =  
+            "日期：" +  
+            y +  
+            "年" +  
+            mt +  
+            "月" +  
+            day +  
+            "日" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+            "时间：" +  
+            h +  
+            "时" +  
+            m +  
+            "分" +  
+            s +  
+            "秒";  
+
+        // 设定定时器，循环运行  
+        setTimeout(time, 1000);  
+}  
+
+// 页面加载完成后立即开始时间显示  
+window.onload = time;  
+    </script>
+
+
+</header>
+
+
+
+<!--内容部分-->
+<div class="con left">
+   
+    <!--统计分析图-->
+    <div class="div_any">
+        <div class="left div_any01">
+            <div class="div_any_child div_height">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_1.png' %}">硬件信息统计</div>
+                <!-- <p id="pieChart" class="p_chart"></p> -->
+                <!-- <p>测试语句</p> -->
+
+                <!-- 如果需要使用主题，也可以引入主题文件 -->
+                <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.2.1/theme/macarons.js"></script>
+                <style>
+                    /* 父容器，用于包含所有的甜甜圈图 */
+                    .container {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 0px; /* 控制甜甜圈图之间的间距，可以根据需要调整这个值 */
+                        height: 100%;
+                        width: 100%;
+                    }
+
+                    /* 每个甜甜圈图容器的样式可以进一步定制，这里假设已经定义好了尺寸 */
+                    .chart-container {
+                        height: 100%;
+                        width: 100%;
+                    }
+                </style>
+                <div class="container">
+                    <div id="cpu-chart" class="chart-container"></div>
+                    <div id="memory-chart" class="chart-container"></div>
+                    <div id="gpu-chart" class="chart-container"></div>
+
+                </div>
+                <!-- <div class="container">
+                </div>
+                <div class="container">
+                </div> -->
+                <script>
+                    // 假设这是从后端获取的数据
+                    var cpuData = {{ latest_info.cpu_status }};
+                    var memoryData = {{ latest_info.memory_status}};
+                    var gpuData = {{ latest_info.gpu_status}};
+                    // 初始化ECharts实例
+                    var cpuChart = echarts.init(document.getElementById('cpu-chart'));
+                    var memoryChart = echarts.init(document.getElementById('memory-chart'));
+                    var gpuChart = echarts.init(document.getElementById('gpu-chart'));
+
+                    // 配置项
+                    var option1 = {
+                        series: [
+                            {
+                                type: 'pie',
+                                radius: ['40%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    show: true,
+                                    position: 'center',
+                                    formatter: '{b}: {d}%', // 显示格式，{b}是数据项名称，{d}是占比百分比
+                                    fontSize: 16,
+                                    fontWeight: 'normal'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true,
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: [{value: cpuData, name: 'CPU Usage'}, {value: 100 - cpuData, name: 'CPU Free'}],
+                                color: ['#FFA500', '#90EE90']
+                            }
+                        ]
+                    };
+                    var option2 = {
+                        series: [
+                            {
+                                type: 'pie',
+                                radius: ['40%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    show: true,
+                                    position: 'center',
+                                    formatter: '{b}: {d}%', // 显示格式，{b}是数据项名称，{d}是占比百分比
+                                    fontSize: 16,
+                                    fontWeight: 'normal'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true,
+                                        fontSize: '26',
+                                        fontWeight: 'bold'
+                                    }
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: [{value: memoryData, name: 'Memory Usage'}, {value: 100 - memoryData, name: 'Memory Free'}],
+                                color: ['#FFA500', '#90EE90']
+                            }
+                        ]
+                    };
+                    var option3 = {
+                        series: [
+                            {
+                                type: 'pie',
+                                radius: ['40%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    show: true,
+                                    position: 'center',
+                                    formatter: '{b}: {d}%', // 显示格式，{b}是数据项名称，{d}是占比百分比
+                                    fontSize: 16,
+                                    fontWeight: 'normal'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true,
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                },
+                                labelLine: {
+                                    show: false
+                                },
+                                data: [{value: gpuData, name: 'GPU Usage'}, {value: 100 - gpuData, name: 'Memory Free'}],
+                                color: ['#FFA500', '#90EE90']
+                            }
+                        ]
+                    };
+                    // 使用刚指定的配置项和数据显示图表。
+                    cpuChart.setOption(option1);
+                    memoryChart.setOption(option2);
+                    gpuChart.setOption(option3);
+                </script>
+                
+
+
+            </div>
+
+
+        </div>
+        
+        <div class="div_any02 left ">
+            <div class="div_any_child div_height">
+                <div class="div_any_title any_title_width"><img src="{% static 'DataCenter/images/title_0.png' %}">数据中心分布</div>
+
+                <div id="main" style="flex-grow: 1; width: 90%; height: 90%; padding-left: 5.0%; padding-top: 2.0%;"></div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBud7TZh7NndjWvJ6cLkWlRyPfJ1JHqz2vKup3dL+eqt" crossorigin="anonymous"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+        <div class="right div_any01">
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_3.png' %}">数据库总数据</div>
+
+                    <div class="table-responsive">
+                        <table class="table data-statistics-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">App</th>
+                                    <th scope="col">表名</th>
+                                    <!-- <th scope="col">模型名</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                        
+                                    {% cycle 'alternate-row-1' 'alternate-row-2' as row_classes silent %}
+                                    {% for info in table_info_list %}
+                                        <tr class="{{ row_classes }}">
+                                            <td>{{ info.app_label }}</td>
+                                            <td>{{ info.table_name }}</td>
+                                            <!-- <td>{{ info.verbose_name }}</td> -->
+                                        </tr>
+                                        {% cycle row_classes %}
+                                    {% endfor %}
+                        
+
+                            </tbody>
+                        </table>
+                    </div>
+                    
+            </div>
+            <div class="div_any_child">
+                <div class="div_any_title"><img src="{% static 'DataCenter/images/title_4.png' %}">传感器信息</div>
+                <!-- <p id="lineChart2" class="p_chart"></p> -->
+                <!-- {% for device_type_count in device_counts %}
+                    <p>{{ device_type_count.device_type }}: {{ device_type_count.device_count }}台</p>
+                {% endfor %} -->
+                <!-- {% for device_type_count in device_counts %}
+                    <div class="device-type-count">
+                        <h3>{{ device_type_count.device_type }}</h3>
+                        <p>数量: {{ device_type_count.device_count }}</p>
+                    </div>
+                {% endfor %} -->
+                <div class="table-responsive">
+                    <!-- <table class="table data-statistics-table"> -->
+                        <table class="table data-statistics-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">设备名</th>
+                                    <th scope="col">数量</th>
+                                    <!-- <th scope="col">模型名</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                        
+                                    {% cycle 'alternate-row-1' 'alternate-row-2' as row_classes silent %}
+                                    {% for device_type_count in device_counts %}
+                                        <tr class="{{ row_classes }}">
+                                            <td>{{ device_type_count.type }}</td>
+                                            <td>{{ device_type_count.device_count }}</td>
+                                            <!-- <td>{{ info.verbose_name }}</td> -->
+                                        </tr>
+                                        {% cycle row_classes %}
+                                    {% endfor %}
+                        
+
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+ <script>
+    var myChart = echarts.init(document.getElementById("main"));
+
+$(function() {
+    // 获取表格对象
+    let table = $("#tbody");
+    // 发生ajax请求，到json文件，data为返回的数据，将数据封装到空数组中；直接拿来用即可
+    $.ajax({
+        url: "{% static 'DataCenter/json/Servers.json' %}",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            console.log(data); // 检查返回的数据
+            let res = [];
+            for (let i = 0; i < data.length; i++) {
+                res.push({
+                    name: data[i].name,
+                    value: data[i].value,
+                    sales: data[i].Sales
+                });
+            }
+            dealWithData(res);
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX请求失败: ", status, error); // 检查请求是否失败
+            alert("数据获取失败！");
+        }
+    });
+});
+
+
+
+
+
+function dealWithData(data) {
+    let dataValue = data;
+    let option = {
+        // 设置一个标题
+        title: {
+            text: '',
+            x: 'center',
+            textStyle: {
+                color: '#fff',
+                fontSize: "40"
+            }
+        },
+        // 鼠标划过省份下弹框
+        tooltip: {
+            show: true,
+            triggerOn: 'click' // 点击生效
+        },
+        geo: {
+            map: 'china', // 必须写
+            roam: false, // 拖拽功能；自选关闭开启
+            zoom: 1.235, // 地图缩放比例
+            center: [105, 36], // 地图位置
+            // 地图省份的样式；包括板块颜色和边框颜色
+            itemStyle: {
+                areaColor: '#e0ffff',
+                borderColor: "#835f5f",
+            },
+            // 省份字体样式；包括是否展示，字体大小和颜色
+            label: {
+                normal: {
+                    show: true,
+                    fontSize: "11",
+                    color: "rgb(128, 0, 128)",
+                    fontWeight: 'bold'
+                }
+            },
+            // 鼠标划过的高亮设置；包括省份板块颜色和字体等
+            emphasis: {
+                itemStyle: {
+                    areaColor: '#d0a3a3',
+                },
+                label: {
+                    show: true,
+                    color: "rgb(255,255,255)"
+                }
+            }
+        },
+        series: [
+            // 涟漪特效
+            {
+                name: "数据中心",
+                type: "effectScatter",
+                coordinateSystem: "geo",
+                data: dataValue, // 传入的地图点数据
+                symbolSize: 6, // 涟漪大小
+                showEffectOn: "render",
+                // 涟漪效应
+                rippleEffect: {
+                    brushType: "stroke",
+                    color: "#f13434",
+                    period: 10, // 周期
+                    scale: 10 // 规模
+                },
+                hoverAnimation: true, // 悬停动画
+                // 地图点样式
+                label: {
+                    formatter: "{b}",
+                    position: "top",
+                    show: true,
+                    fontSize: "10",
+                },
+                itemStyle: {
+                    color: "#f13434",
+                    shadowBlur: 2,
+                    shadowColor: "#333"
+                },
+                // 鼠标点击散点的下弹框
+                tooltip: {
+                    show: true,
+                    triggerOn: "click",
+                    formatter: function(data1) {
+                        console.log(data1);
+                        let data2 = data1.data;
+                        return "<b>数据中心<b><br>" + data2.name + data2.sales;
+                    }
+                },
+                zlevel: 1
+            }
+        ]
+    };
+    myChart.setOption(option);
+}
+
+
+
+ </script>
+
+
+
+
+
+</html>

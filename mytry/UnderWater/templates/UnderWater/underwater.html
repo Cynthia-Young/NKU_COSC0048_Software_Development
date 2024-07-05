@@ -1,0 +1,542 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>海洋牧场可视化系统</title>
+    <script src="{% static 'UnderWater/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/Plugin/echarts.min.js' %}"></script>
+    <script src="{% static 'UnderWater/js/common.js' %}"></script>
+    <!-- <script src="{% static 'UnderWater/js/trend.js' %}"></script> -->
+
+
+    <!-- <link rel="css" href="{% static 'UnderWater/css/common.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'UnderWater/css/common.css' %}">
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+</head>
+<body>
+<!--顶部-->
+<header class="header left">
+   <div class="left nav">
+        <ul>
+            <li><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a> </li>
+            <li class="nav_active"><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a></li>
+            
+            <li><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a> </li>
+  
+            <!-- <li class="nav_active"><i class="nav_4"></i><a href="trend.html">智能中心</a> </li> -->
+            <li><i class="nav_4"></i><a href="{% url 'SmartCenter' %}">智能中心</a> </li>
+            <li><i class="nav_5"></i><a href="{% url 'BackManage' %}">后台管理</a> </li>
+        </ul>
+   </div>
+    <div class="header_center left" style="position:relative">
+  
+        <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+        
+    </div>
+
+    <div class="right showTime text_right"></div>
+        <script>
+        function time() {  
+            var dt = new Date();  
+            var y = dt.getFullYear();  
+            var mt = dt.getMonth() + 1;  
+            var day = dt.getDate();  
+            var h = dt.getHours(); // 获取时  
+            var m = dt.getMinutes(); // 获取分  
+            var s = dt.getSeconds(); // 获取秒  
+    
+            // 为了确保月份、日期、小时、分钟和秒都是两位数  
+            mt = mt < 10 ? '0' + mt : mt;  
+            day = day < 10 ? '0' + day : day;  
+            h = h < 10 ? '0' + h : h;  
+            m = m < 10 ? '0' + m : m;  
+            s = s < 10 ? '0' + s : s;  
+    
+            // 更新显示时间  
+            document.querySelector(".showTime").innerHTML =  
+                "日期：" +  
+                y +  
+                "年" +  
+                mt +  
+                "月" +  
+                day +  
+                "日" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+                "时间：" +  
+                h +  
+                "时" +  
+                m +  
+                "分" +  
+                s +  
+                "秒";  
+    
+            // 设定定时器，循环运行  
+            setTimeout(time, 1000);  
+    }  
+  
+    // 页面加载完成后立即开始时间显示  
+    window.onload = time;  
+        </script>
+
+
+</header>
+
+<!--内容部分-->
+<!--左边-->
+<div class="con left" style="width:25%;">
+
+
+    <div class="div_any">
+        <!--鱼群数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 100px;">
+                <div class="div_any_title">鱼群数量</div>
+                <div class="left text01_div" style="width: 35%;">
+                    <p>鱼群数量</p>
+                    <p>{{fishnum}}</p>
+                    <!-- <tr>
+                        <td>{{fishnum}}</td>
+                    </tr> -->
+                </div>
+
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日新增</p>
+                    <p class="sky">10</p>
+                </div>
+                <div class="left text01_div" style="width: 20%;">
+                    <p>今日死亡</p>
+                    <p class="red">8</p>
+                </div>
+            
+            </div>
+        </div>
+
+
+
+        <!--环境得分计算-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 400px;">
+                <div class="div_any_title">海洋牧场环境感知</div>
+                <!-- 插入雷达图 -->
+                <div id="radarChart" style="margin-top: 2.5%; width: 100%; height: 100%; margin-left: .5%; margin-right: .5%; margin-top: 5%; margin-bottom: .5%;"></div>
+                <script>
+                    // 页面加载完成后初始化图表
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // 初始化雷达图
+                        initRadarChart();
+                    });
+                    function initRadarChart() {
+                        // 基于准备好的dom,初始化echarts实例
+                        var radarChart = echarts.init(document.getElementById('radarChart'));
+                        
+                        // 指定图表的配置项和数据
+                        var option = {
+                            // title: {
+                            //     text: '海洋牧场环境感知得分'
+                            // },
+                            tooltip: {},
+                            legend: {
+                                data: ['海洋牧场环境感知'],
+                                textStyle: {
+                                        color: '#fff'
+                                }
+                            },
+                            radar: {
+                                // shape: 'circle',
+                                name: {
+                                    textStyle: {
+                                        color: '#fff',
+                                        backgroundColor: '#999',
+                                        borderRadius: 3, //文字边框圆角
+                                        padding: [2, 3] //文字边框内边距
+                                    }
+                                },
+                                indicator: [ // 雷达图的指示器，用来指定雷达图中的多个变量（维度）
+                                    { name: '温度', max: 20 },
+                                    { name: 'PH值', max: 14 },
+                                    { name: '溶解氧', max: 20 },
+                                    { name: '电导率', max: 300 },
+                                    { name: '浊度', max: 80 },
+                                    { name: '高猛酸盐', max: 25 },
+                                    { name: '氨氮', max: 0.3 },
+                                    { name: '总磷', max: 0.3 },
+                                    { name: '总氮', max: 25 }
+                                ]
+                            },
+                            series: [{
+                                name: '海洋牧场环境感知',
+                                type: 'radar',
+                                // areaStyle: {normal: {}},
+                                data: [
+                                    {
+                                        value: [{{water.temperature}}, {{water.ph}}, {{water.dissolved_oxygen}}, {{water.conductivity}}, {{water.turbidity}}, {{water.permanganate_index}}, {{water.ammonia_nitrogen}}, {{water.total_phosphorus}}, {{water.total_nitrogen}}],
+                                        name: '海洋牧场环境感知'
+                                   }
+                                ]
+                            }]
+                        };
+                        // 使用刚指定的配置项和数据显示图表。
+                        radarChart.setOption(option);
+                        window.addEventListener('resize', function () {
+                            radarChart.resize();
+                        });
+                    }
+                </script>
+            </div>
+        </div>
+        
+        <!--文件下载-->
+        <div class="left div_any01" style="width: 98%;">
+            <div class="div_any_child" style="height: 360px;">
+                <div class="div_any_title">数据下载</div>
+                    <!-- 插入文本 -->
+                    <!-- <span style="font-size: larger; color: white; font-weight: bold; font-style: italic;">请点击按钮下载鱼群相关数据~</span> -->
+                    <!-- GIF图片插入 -->
+                    <div style="text-align:center; margin: 20px 0;">
+                        <img src="{% static 'UnderWater/images/download.gif' %}" alt="加载中..." style="max-width:100%; height:auto;">
+                    </div>
+                    <!-- <button id ="download-button"> Download CSV </button> -->
+                    <button class="download-btn" id="download-button" style="display: block; margin: 20px auto 0;"> Download CSV </button>
+                    <script>
+                        var downloadButton = document.getElementById('download-button');
+                        downloadButton.addEventListener('click', function() {
+                            // 发送AJAX请求获取数据
+                            var xhr = new XMLHttpRequest();
+                            // xhr.open('GET', '/download_data/', true);
+                            xhr.open('GET', "{% url 'download-csv' %}", true);
+                            xhr.responseType = 'blob';
+                            xhr.onload = function() {
+                                //将相应内容转化为可下载的URL
+                                var blog = xhr.response;
+                                var url = window.URL.createObjectURL(blog);
+                                //创建一个隐藏的<a>元素，并将可下载 的URL赋值给 它的href属性
+                                var a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'fish_data.csv';
+                                //将<a>元素添加到DOM中
+                                document.body.appendChild(a);
+                                //模拟点击
+                                a.click();
+                                //清理URL对象
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                            };
+                            xhr.send();
+
+                        });
+                    </script>
+            </div>
+        </div>
+  
+
+    </div>
+</div>
+
+
+
+
+
+<!--中间-->
+<div class="con left" style="width: 53%;">
+    <div class="div_any"> 
+      <!--总数量-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+                <div class="div_any_title">鱼群模拟</div>
+                <div id="fish" style="width: 100%;height:100%;"></div>
+                <!-- 模拟鱼群增长动画 -->
+                <script>            
+                    var chartDom = document.getElementById('fish');
+                    var Chart = echarts.init(chartDom);
+                    var option;
+                    
+                    const fishDataURI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAMAAABOo35HAAADAFBMVEVHcEzm5uaKlqhmaGn8/Pzr6+tjZWf19fX19fW1vs3l5ebo6Oh2eHmGjJTm5uacpK9tcXSoqq7S09SEhont7e3r6+vs7OyPkZKIi43JycqTlZedn6Hw8PDNz9DHyMi1usK1vs3P1d6go6aBg4Xt7e3Ozs+xtr3BwsKLkJhqbXB2eoDj5OTExcazvMrh5OrS09OVl5pvcnbT09SZmpvb3N2hoqOwsbHk5OS4ubnGx8essbmztLSusLGYmZrQ0dGFhoeUlZbBxs+kpaaWmJqGkaCHiIl9f4DCwsOLjY6jpKT29vbGx8eztLR7gYp5e32Mjo+oqqvs7Oy0tbbq6urY2dnIyMlxc3WYmZp6fH6EhofExcanqKnp6elmaGp8foBrb3P+/v5zdnnn6Oj19fXKysuwsbOBgoRtcHLKysqZnKGho6S8vb+0tbbo6Oiio6WLjZCsrrBpamzc3d65urvJycrm5ubT1NT6+vq1vs20vcz///+2v86fq76dqbzEy9ezvMvAx9TM0t2ap7u8xNLK0dzIz9qTobbHztmlsMLCytbFzNfBydXJ0Nu5wc/FzNi6w9GRn7T+/v/8/f2Vo7fO1N6vucnQ1t+3wM+nssPU2eK+xtOrtsaptMUDAwOtt8ijrsDS1+BvdHuyu8uxusrm6e7j5uzW2+Ozvcze4+nc4OeYpbldYGPY3OT6+/yQnrKvuMbp7PCgrL/t7/La3uZhY2SXpLihrb9lanBrbnKqs8D09fdqcHj4+fqttcOZoKu2v83w8fSeprKxuch0fIilrbqOm62WnaihqLVcXmB7gYqAhY15foRqbG3y9PZ0eYCIjpiCiJGnsL1xc3WHkqN5go+OlJyPlZ9jZ2x8hpSTmqZvd4GAi5qQmKP29/mjq7dfY2iLkZt6fH5YW13IycyDjp6Un6+Yo7SvsLJ+f4Dg4OIRERFaXV8zNDaCipbW19mmp6i3uLicp7i/v8Dr6+uYm50gISIrKyygpayUoLOhq7q4vsi8wsxISUzl5eY/P0FVV1l1/VOiAAAA+3RSTlMAEP7+AwP+AQL+CzD+/hb+/f7+/h0lBv7+T/79O/5e/vz+/P5nL/4j/fv9Tf79/3b85D22/lxwX5Vt/bupd57SyP634P674oPjj027SPzvnMiLgHmxlvefxfDKObXnqvB41pyk596Av9ru1OLpzuP48s/S9fTp78z////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+/////////////////////////////////ppgIusAACAASURBVHja7JprUFNnGsdDICQBuYN4ZVgvK05FtIK6Vl1nddudcbe6a2sdO2vHD9VRd5zut5xzxAhYrIvIxboRhWq4uEjAsAFKQi4SAoQ7xEICQSEFFEgOiNDE7kwI+54Q0cBRUfmS8P5mCIHky/ub//Oc533PoVAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEAgEAoFAIBAIBAKBQCAQCGQeQqczCNzcGHQo43WWaDR7QwxojAyQJds7N+/AIE9Pz2XLPL2tf9MY0I5dptyslgKXbTmw87PDp/7xjR+g/7enDu+M8CQ+osF4TZkCKuhBW/6695Tfs2c+yq5KkUjKB4hElV1d2w5HeEJdNlMMIjmBWz7/+plMrpKGhxIwmUwWgMkE77Okom1/iPIAuZvvuug08OISsv20TCmqAGY4iQAOB2PdA79ZCEIYA7666o7u8J7fuhjWzr36bydlqgoES7p4Pu1Obm7+vy+ci0u8XpRdmJ2fcI+wxUKYofw2zdHNLiCG8zVTREy8ozadqKxgJv0rLUdQLsjOj0lI4gA7SGJMftHtmHMca7bAP1jhPtzi34cAwfR5Wn6Bi7/YreRj12NyBWXlObe/vQ7cTMKaemMDvBGFaVw3gVY/32wR1QQa1W6ZCImLWV/eWFh0KQ6zk0Ok66U/rLCV9bxPIxjzyxahKjDipNqHzzlbJGjMTruYOE0UKeBzfpu78POF86hxEQXoHXFaLa9IisluFOSf5cxC1FS4ZGtdtzIo88UWWKdHyP42eUXcrcLGnJiktzBFhAtR+rpv9ZgftkAFuX2wv82HH5cmKL9zmfM2pmylqFzrutd7PvQtEAjPj9qqpUm3BOVFCay3NGXLls9a4WcedGe3BTbL9N+dUKs4MYXvqGrSVrX7wAFnL0SQhcDtuq7wi+vLcy++oyqrrcywml0ezl2IoFuF7K7mJ6UJsi9gdqowsBck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'
+                    const beginYear = 2015;
+                    const endYear = 2024;
+                    const fishCount = 20; // 假设鱼群的数量
+                    
+                    option = {
+                        color: ['#3398DB'],
+                        xAxis: {
+                            axisLine: { show: false },
+                            axisLabel: { show: false },
+                            axisTick: { show: false },
+                            splitLine: { show: false },
+                            name: beginYear + '年',
+                            nameLocation: 'middle',
+                            nameGap: 40,
+                            nameTextStyle: {
+                            color: 'white',
+                            fontSize: 30,
+                            fontFamily: 'Arial'
+                            },
+                            min: -1500,
+                            max: 1500
+                        },
+                        yAxis: {
+                            data: makeCategoryData(),
+                            show: false
+                        },
+                        grid: {
+                            top: 'center',
+                            height: '65%',
+                            left: '20%',
+                            right: '20%'
+                        },
+                        series: [
+                            {
+                                name: 'fish',
+                                type: 'pictorialBar',
+                                symbol: 'image://' + fishDataURI,
+                                symbolSize: [35, 55],
+                                symbolRepeat: true,
+                                data: makeSeriesData(beginYear),
+                                animationEasing: 'elasticOut'
+                            },
+                            {
+                                name: 'fish',
+                                type: 'pictorialBar',
+                                symbol: 'image://' + fishDataURI,
+                                symbolSize: [35, 55],
+                                symbolRepeat: true,
+                                data: makeSeriesData(beginYear, true),
+                                animationEasing: 'elasticOut'
+                            }
+                        ]
+                    };
+                    
+                    function makeCategoryData() {
+                        var categoryData = [];
+                        for (var i = 0; i < fishCount; i++) {
+                            categoryData.push(i + 'a');
+                        }
+                        return categoryData;
+                    }
+                    
+                    function makeSeriesData(year, negative) {
+                        const r = (year - beginYear + 1) * 10;
+                        const seriesData = [];
+                        for (let i = 0; i < fishCount; i++) {
+                            let sign = negative ? -1 * (i % 3 ? 0.9 : 1) : 1 * ((i + 1) % 3 ? 0.9 : 1);
+                            seriesData.push({
+                                value:
+                                    sign *
+                                    (year <= beginYear + 1
+                                        ? Math.abs(i - fishCount / 2 + 0.5) < fishCount / 5
+                                            ? 5
+                                            : 0
+                                        : (fishCount - Math.abs(i - fishCount / 2 + 0.5)) * r),
+                                symbolOffset: i % 2 ? ['50%', 0] : undefined
+                            });
+                        }
+                        return seriesData;
+                    }
+                    
+                    var currentYear = beginYear;
+                    setInterval(function () {
+                        currentYear++;
+                        if (currentYear > endYear) {
+                            currentYear = beginYear;
+                        }
+                        Chart.setOption({
+                            xAxis: {
+                                name: currentYear + '年',
+                            },
+                            series: [
+                                {
+                                    data: makeSeriesData(currentYear)
+                                },
+                                {
+                                    data: makeSeriesData(currentYear, true)
+                                }
+                            ]
+                        });
+                    }, 1500);
+                    
+                    option && Chart.setOption(option);
+                </script>
+            </div>
+        </div>
+        
+    
+      <!--鱼群属性曲线-->
+      <div class="left div_any01" style="width:100%;">
+        <div class="div_any_child" style="width:98%;position:relative;height: 360px;">
+            <div class="div_any_title">鱼群属性</div>
+            
+
+                <!-- 曲线 -->
+                <div class="wave-container">
+                    <div id="fishPropertyChart" style="width: 100%; height: 300px;"></div> 
+                    <div class="wave">
+                        <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.3.2/echarts.min.js"></script>
+                        <script>
+                            // 页面加载完成后初始化图表
+                            document.addEventListener('DOMContentLoaded', function () {
+                                 // 存储所有鱼种的重量数据
+                                let fishWeights = {
+                                    'Bream': {{ Bream_weights|safe }},
+                                    'Roach': {{ Roach_weights|safe }},
+                                    'Whitefish': {{ Whitefish_weights|safe }},
+                                    'Parkki': {{ Parkki_weights|safe }},
+                                    'Perch': {{ Perch_weights|safe }},
+                                    'Pike': {{ Pike_weights|safe }},
+                                    'Smelt': {{ Smelt_weights|safe }},
+                                };
+                                function updateChartBySpecies(species) {
+                                    let array = fishWeights[species];
+                                    
+                                    let mean = array.reduce((a,b) => a + b) / array.length;
+                                    let variance = array.map(x => Math.pow(x - mean, 2)).reduce((a,b) => a + b) / array.length;
+                                    let StandardDeviation = Math.sqrt(variance);
+                                    let convertedData=[];
+                                    for(let x = mean - 3 * StandardDeviation; x <= mean + 3 * StandardDeviation; x++){
+                                        let y = 1/(StandardDeviation*Math.sqrt(2*(Math.PI)))*Math.exp(-(Math.pow(x-mean,2))/(2*(Math.pow(StandardDeviation,2))));
+                                        convertedData.push([x,y]);
+                                    }
+                                    let xdata = convertedData.map(item => item[0]);
+                                    let ydata = convertedData.map(item => item[1]);
+                    
+                                    var chart = echarts.init(document.getElementById('fishPropertyChart')); // 初始化ECharts实例
+                                    var option = {
+                                        xAxis: {
+                                            type: 'category',
+                                            // type: 'value',
+
+                                            data: xdata
+                                        },
+                                        yAxis: {
+                                            type: 'value'
+                                        },
+                                        series: [{
+                                            data: ydata,
+                                            type: 'line',
+                                            smooth: true
+                                        }]
+                                    };
+                                    // 应用配置到图表
+                                    chart.setOption(option);
+                                }
+                            
+                                // 绑定按钮点击事件
+                                document.querySelectorAll('.fish-buttons button').forEach(button => {
+                                    button.addEventListener('click', function() {
+                                        let species = this.getAttribute('data-species');
+                                        updateChartBySpecies(species);
+                                        document.querySelectorAll('.fish-buttons .btn').forEach(btn => btn.classList.remove('active'));
+                                        this.classList.add('active');
+                                    });
+                                });
+                                // 初始化图表，默认显示第一个鱼种（例如Bream）
+                                updateChartBySpecies(Object.keys(fishWeights)[0]);
+                                document.querySelectorAll('.fish-buttons .btn')[0].classList.add('active');
+                            });
+                     
+                        </script>
+                    </div>
+                </div >
+
+                   <!-- 按钮 -->
+                   <div class="fish-buttons">
+                    <!-- <div id="fishPropertyChart" style="width: 100%; height: 60px;"></div>  -->
+                    <button class="btn btn-1" data-species="Bream">Bream重量分布</button>
+                    <button class="btn btn-2" data-species="Roach">Roach重量分布</button>
+                    <button class="btn btn-3" data-species="Whitefish">Whitefish重量分布</button>
+                    <button class="btn btn-4" data-species="Parkki">Parkki重量分布</button>
+                    <button class="btn btn-5" data-species="Perch">Perch重量分布</button>
+                    <button class="btn btn-6" data-species="Pike">Pike重量分布</button>
+                    <button class="btn btn-7" data-species="Smelt">Smelt重量分布</button>
+                </div>
+
+
+                    
+                
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!--右侧-->
+<div class="con left" style="width: 22%;">
+    <div class="div_any">
+        <!--设备信息-->
+        <div class="left div_any01" style="width:100%;">
+            <div class="div_any_child" style="width:98%;position:relative;height: 525px;">
+                <div class="div_any_title">设备信息</div>
+                <!-- 展示设备信息：名称、状态、描述信息 -->
+                <div class="device-list-container" style="margin: 6%;
+                max-height: 90%; /* 或者根据需要设置其他值 */
+                overflow-y: auto; /* 当内容超出指定高度时，显示垂直滚动条 */
+                padding: 15px; /* 可选，为了美观添加一些内边距 */
+                border: 1px solid #ccc; /* 可选，添加边框以更清晰地定义容器 */
+                color: #ffffff; /* 白色 */">
+                        <li>----------</li>                            
+                        {% for device in device_list %}
+                            <li>名称：{{ device.type }}</li>
+                            <li>开关情况：（0表示关，1表示开）{{ device.on }}</li>
+                            <li>状态：（0表示正常，1表示故障，2表示未知）{{ device.state }}</li>
+                            <li>描述信息：{{ device.description }}</li>
+                            <li>----------</li>                            
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!--鱼群种类占比-->
+        <div class="left div_any01" style="width: 98%;flex; justify-content: center; align-items: center;">
+            <div class="div_any_child" style="height: 360px;; width: 98%; display: flex; justify-content: center; align-items: center;">
+                <div class="div_any_title">鱼群种类占比</div>
+                <!-- <ul>
+                    {% for species in fish_counts %}
+                        <li>{{ species.Species }}: {{ species.count }} 条</li>
+                    {% endfor %}
+                    </ul> -->
+                    <div id="main" style="width: 98%;height:360px;"></div>
+                    <script type="text/javascript">
+                        // 初始化 echarts 实例
+                        var myChart = echarts.init(document.getElementById('main'));
+                        // 获取由视图传递过来的数据
+                        var chartData = {{ chart_data|safe }};
+                        // 检查chartData是否为空
+                        if (chartData && chartData.length > 0) {
+                            myChart.setOption({
+                                series : [{
+                                        name: '鱼群占比',
+                                        type: 'pie',    // 设置图表类型为饼图
+                                        radius: '55%',  // 饼图的半径，外半径为可视区尺寸（容器高宽中较小一项）的 55% 长度。
+                                        label: {
+                                            position: 'outside',
+                                            formatter: '{b}:{c} ({d}%)'
+                                        },
+
+                                        data:chartData
+                                    }
+                                ]
+                            })
+                        } else {
+                            myChart.clear();
+                            var container = document.getElementById('main');
+                            container.style.position = 'relative'; // 确保容器具有相对定位
+                            var img = document.createElement('img'); // 创建一个img元素
+                            img.style.position = 'absolute'; // 设置图片为绝对定位
+                            img.style.top = '5%'; // 设置图片顶部对齐容器顶部
+                            img.style.left = '5%'; // 设置图片左侧对齐容器左侧
+                            img.style.width = '90%'; // 设置图片宽度为容器的100%
+                            img.style.height = '90%'; // 设置图片高度为容器的100%
+                            img.src = "{% static 'UnderWater/images/img.jpg' %}"; // 设置图片路径
+                            container.appendChild(img); // 将img元素添加到容器中
+                        }
+                    </script>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

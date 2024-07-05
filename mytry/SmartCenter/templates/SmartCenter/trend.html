@@ -1,0 +1,658 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>智能中心</title>
+    <script src="{% static 'SmartCenter/js/Plugin/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'SmartCenter/js/Plugin/echarts.min.js' %}"></script>
+    <script src="{% static 'SmartCenter/js/common.js' %}"></script>
+    <script src="{% static 'SmartCenter/js/trend.js' %}"></script>
+
+
+    <!-- <link rel="css" href="{% static 'SmartCenter/css/common.css' %}"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'SmartCenter/css/common.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <link href="/static/css/common.css" rel="stylesheet" type="text/css" media="all" /> -->
+
+    <!-- <script src="/static/js/Plugin/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/Plugin/echarts.min.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/trend.js"></script> -->
+</head>
+<body>
+    <!--顶部-->
+    <header class="header left">
+      <div class="left nav">
+          <ul>
+              <li><i class="nav_1"></i><a href="{% url 'MainInformation' %}">主要信息</a> </li>
+              <li><i class="nav_2"></i><a href="{% url 'UnderWater' %}">水下系统</a> </li>
+              <li><i class="nav_3"></i><a href="{% url 'DataCenter' %}">数据中心</a> </li>
+    
+              <!-- <li class="nav_active"><i class="nav_4"></i><a href="trend.html">智能中心</a> </li> -->
+              <li class="nav_active"><i class="nav_2"></i><a href="{% url 'SmartCenter' %}">智能中心</a></li>
+              <li><i class="nav_3"></i><a href="{% url 'BackManage' %}">后台管理</a> </li>
+
+              <!-- <li class="nav_5"><i class="nav_5"></i><a href="chronic.html">后台管理</a></li> -->
+
+              <!-- <li class="nav_active"><i class="nav_2"></i><a href="{% url 'SmartCenter_user' %}">智能中心2</a></li> -->
+    
+            </ul>
+      </div>
+        <div class="header_center left" style="position:relative">
+            <h2><strong>海 洋 牧 场 可 视 化 系 统</strong></h2>
+        </div>
+        <div class="right showTime text_right"></div>
+        <script>
+        function time() {  
+            var dt = new Date();  
+            var y = dt.getFullYear();  
+            var mt = dt.getMonth() + 1;  
+            var day = dt.getDate();  
+            var h = dt.getHours(); // 获取时  
+            var m = dt.getMinutes(); // 获取分  
+            var s = dt.getSeconds(); // 获取秒  
+    
+            // 为了确保月份、日期、小时、分钟和秒都是两位数  
+            mt = mt < 10 ? '0' + mt : mt;  
+            day = day < 10 ? '0' + day : day;  
+            h = h < 10 ? '0' + h : h;  
+            m = m < 10 ? '0' + m : m;  
+            s = s < 10 ? '0' + s : s;  
+    
+            // 更新显示时间  
+            document.querySelector(".showTime").innerHTML =  
+                "日期：" +  
+                y +  
+                "年" +  
+                mt +  
+                "月" +  
+                day +  
+                "日" +
+                "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  
+                "时间：" +  
+                h +  
+                "时" +  
+                m +  
+                "分" +  
+                s +  
+                "秒";  
+    
+            // 设定定时器，循环运行  
+            setTimeout(time, 1000);  
+    }  
+  
+    // 页面加载完成后立即开始时间显示  
+    window.onload = time;  
+        </script>
+
+
+    </header>
+    <!--内容部分-->
+    <div class="con left" style="width:50%;">
+        <!--统计分析图-->
+        <div class="div_any">
+            <div class="left div_any01" style="width:100%;">
+                <div class="div_any_child" style="width:98%;position:relative;height: 420px;">
+                    <div class="div_any_title"><img src="{% static 'SmartCenter/images/title_13.png' %}" alt="Example Image">海洋牧场环境感知得分</div>
+                    <div class="dashboard-container" style="display: flex; flex-direction: row; height: 100%; width: 100%; align-items: center;">
+                        <div id="chartContainer" style="display: flex; flex-direction: column; align-items: center; width: 60%; height: 100%; float: left">
+                            <div id="chartContainer1" style="width: 100%; height: 100%; padding: 0; margin: 0; margin-top: 20%;"></div>
+                            <script>
+                                // DOM 加载完成后执行此函数，确保在操作 DOM 时它们已经被加载
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    // 基于准备好的dom，初始化echarts实例
+                                    var myChart = echarts.init(document.getElementById('chartContainer1'));
+                                    // ECharts配置选项
+                                    var option = {
+                                        // ...（你的图表配置选项）
+                                        // 请在此处粘贴上面你给出的option配置代码
+                                        series: [
+                                            {
+                                                // backgroundColor: 'pink',
+                                                name: '内层数据刻度',
+                                                type: 'gauge',
+                                                // 外层渐变加刻度修改大小  如改这个配置   请同步修改内圈及指针
+                                                radius: '100%',
+                                                // 最大最小值
+                                                min: 0,
+                                                max: 100,
+                                        
+                                                center: ['50%', '50%'],
+                                                startAngle: 186,
+                                                endAngle: -6,
+                                        
+                                                // 刻度分割比例
+                                                splitNumber: 10,
+                                        
+                                                // 设置外侧背景色
+                                                axisLine: {
+                                                    show: true,
+                                                    //  圆角
+                                                    roundCap: true,
+                                                    lineStyle: {
+                                                    width: 12,
+                                                    // 颜色渐变
+                                                    color: [
+                                                        [1, new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                                            {
+                                                                offset: 0.1,
+                                                                color: "#DB7E41"
+                                                            },
+                                                            {
+                                                                offset: 0.8,
+                                                                color: "#7CAEFF"
+                                                            },
+                                                            {
+                                                                offset: 1,
+                                                                color: "#58BF7C"
+                                                            }
+                                                        ])
+                                                        ]
+                                                    ]
+                                                    },
+                                                },
+                                        
+                                                // 修改刻度线样式
+                                                axisTick: {
+                                                    show: true,
+                                                    splitNumber: 100,
+                                                    // 刻度长度(宽)
+                                                    length: 60,
+                                                    // 距离渐变色圈的位置比
+                                                    distance: 0,
+                                                    //  变成粉色背景 透明度越高, 刻度线就不会显示出来 
+                                                    lineStyle: {
+                                                    color: 'rgba(254, 69, 27, 0.05)',
+                                                    opacity: 1,
+                                                    }
+                                                },
+                                                splitLine: {
+                                                    show: false,
+                                                },
+                                                // 刻度文字 配置
+                                                axisLabel: {
+                                                    // 距离渐变色圈的位置比
+                                                    distance: 5,
+                                                    fontSize: 15,
+                                                    color: 'red'
+                                                },
+                                                // 指针配置
+                                                pointer: {
+                                                    // 指针长度
+                                                    length: '55',
+                                                    // 指针形状
+                                                    icon: 'triangle',
+                                                    width: 6,
+                                                    // 指针样式配置对象
+                                                    itemStyle: {
+                                                    color: 'rgba(124, 174, 255, 1)',
+                                                    },
+                                                },
+                                                // 中间文字配置
+                                                detail: {
+                                                    offsetCenter: ['0%', '55%'],
+                                                    color: 'rgba(124, 174, 255, 1)',
+                                                    fontSize: 30,
+                                                    fontFamily: 'DIN-Regular'
+                                                },
+                                                data: [
+                                                    {
+                                                    // value: 40,
+                                                    value: {{ score|safe }},
+
+                                                    },
+                                                ],
+                                            },
+                                            {   
+                                                name: '最内层线',
+                                                type: 'gauge',
+                                                // 外层修改 这个需同步修改
+                                                radius: '50%',
+                                        
+                                                center: ['50%', '50%'],
+                                                startAngle: 186,
+                                                endAngle: -6,
+                                        
+                                                splitLine: {
+                                                    show: false,
+                                                },
+                                                axisLabel: {
+                                                    show: false,
+                                                },
+                                                // 线的修改
+                                                axisLine: {
+                                                    show: true,
+                                                    lineStyle: {
+                                                    color: [[1, 'rgba(254, 69, 27, 0.06)']],
+                                                    // 宽度  指针覆盖的那个
+                                                    width: 80,
+                                                    opacity: 0.5,
+                                                    },
+                                                },
+                                                axisTick: {
+                                                    show: false,
+                                                },
+                                                pointer: {
+                                                    show: false,
+                                                },
+                                                detail: {
+                                                    show: false,
+                                                },
+                                                data: [
+                                                    {
+                                                    // value: 40,
+
+                                                    value: {{ score|safe }},
+                                                    },
+                                                ],
+                                            },
+                                        ],
+
+                                    };
+                            
+                                    // 使用刚指定的配置项和数据显示图表。
+                                    myChart.setOption(option);
+                                });
+                            </script>
+                            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+                            <div id="text-container1" style="display: flex; flex-direction: row; align-items: center; width: 100%; text-align: center; margin-bottom: 5%; justify-content: center;">
+                                {% if warning_oxygen == '是' %}
+                                    <i class="fas fa-exclamation-triangle alert-icon" style="font-size: 36px;color: red;"></i>
+                                    <div class="warning" style="font-size: 24px;color: red;">预警: 溶解氧水平低！</div>
+                                {% elif warning_temperature == '是' %}
+                                    <!-- 使用elif进行第二个条件判断 -->
+                                    <i class="fas fa-thermometer-half alert-icon" style="font-size: 36px; color: red;"></i>
+                                    <div class="warning" style="font-size: 24px;color: red">预警: 温度过高！</div>
+                                {% else %}
+                                    <i class="far fa-check-circle alert-icon" style="font-size: 36px; color: green;"></i>
+                                    <div class="normal" style="font-size: 24px;color: green">环境正常</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-container2" style="width: 38%; text-align: center; color:white; line-height: 2.5;">
+                            <h1>最新环境数据</h1>
+                            <p>监测时间: {{ latest_data.monitoring_date }}</p>
+                            <p>水质类别: {{ latest_data.water_quality }}</p>
+                            <p>水温: {{ latest_data.water_temperature }}℃</p>
+                            <p>pH值: {{ latest_data.ph_level }}</p>
+                            <p>溶解氧: {{ latest_data.dissolved_oxygen }}mg/L</p>
+                            <h2>得分: {{ score }}</h2>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            <div class="left div_table_box" style="width: 100%;display: flex;">
+                <div class="div_any_child" style="height: 420px;">
+                    <div class="div_any_title"><img src="{% static 'SmartCenter/images/title_16.png' %}" alt="Example Image">气象数据</div>
+                    <head> 
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                            }
+                    
+                            .container {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 20px;
+                            }
+                    
+                            .text-container {
+                                max-width: 60%;
+                                /* 居中展示 */
+                                margin: 0 auto; /* 水平居中 */
+                                text-align: center; /* 文本内容也居中对齐 */
+
+                            }
+                    
+                            .image-container {
+                                min-width: 30%;
+                                display: flex; /* 使用Flex布局 */
+                                justify-content: center; /* 水平居中 */
+                                align-items: center; /* 垂直居中，假设容器有一个确定的高度 */
+                            }
+                    
+                            .title {
+                                font-size: 24px;
+                                margin-bottom: 10px;
+                            }
+                    
+                            .description {
+                                font-size: 16px;
+                                margin-bottom: 20px;
+                            }
+                    
+                            img {
+                                max-width: 100%;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="text-container">
+                                <style>
+                                    /* 添加内联样式 */
+                                    .weather-text {
+                                        color: white; /* 更改字体颜色为白色 */
+                                        text-align: center; /* 居中对齐 */
+                                        line-height: 2; /* 行距 */
+                                    }
+                                </style>
+                                <h1 class="weather-text">{{ city|default:"" }} 的实时天气</h1>
+                                {% if error_message %}
+                                    <p class="weather-text">{{ error_message }}</p>
+                                {% else %}
+
+                                    <p class="weather-text">温度: {{ temperature|default:"" }} °C</p>
+                                    <p class="weather-text">天气状况: {{ description|default:"" }}</p>
+                                    <p class="weather-text">湿度: {{ humidity|default:"" }}%</p>
+                                    <p class="weather-text">风速: {{ wind_speed|default:"" }} 米/秒</p>
+                                    <!-- <p class="weather-text">来源:https://openweathermap.org/</p> -->
+                                    <p class="weather-text">数据来源: <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>                    
+                                {% endif %}
+                                <!-- <div class="title">Tianjin 的实时天气</div>
+                                <div class="description">温度：27.97°C</div>
+                                <div class="description">天气状况：晴</div>
+                                <div class="description">湿度：47%</div>
+                                <div class="description">风速：4米/秒</div>
+                                <div class="description">来源：<a href="https://openweathermap.org/">https://openweathermap.org/</a></div> -->
+                            </div>
+                            <div class="image-container">
+                                <canvas id="weatherChart" width="400" height="400"></canvas>
+                                <script>
+                                    // 确保页面加载完成后再执行此脚本
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        // 从Django模板上下文中获取数据
+                                        var temperature = {{ temperature|safe }};
+                                        var humidity = {{ humidity|safe }};
+                                        var windSpeed = {{ wind_speed|safe }};
+                                
+                                        // 初始化图表
+                                        var ctx = document.getElementById('weatherChart').getContext('2d');
+                                        var weatherChart = new Chart(ctx, {
+                                            type: 'bar', // 或者'doughnut', 'line', 'pie'等，根据需要选择图表类型
+                                            data: {
+                                                labels: ['温度', '湿度', '风速'],
+                                                datasets: [{
+                                                    label: '当前天气状况',
+                                                    data: [temperature, humidity, windSpeed],
+                                                    backgroundColor: [
+                                                        'rgba(255, 99, 132, 0.2)',
+                                                        'rgba(54, 162, 235, 0.2)',
+                                                        'rgba(255, 206, 86, 0.2)',
+                                                    ],
+                                                    borderColor: [
+                                                        'rgba(255, 99, 132, 1)',
+                                                        'rgba(54, 162, 235, 1)',
+                                                        'rgba(255, 206, 86, 1)',
+                                                    ],
+                                                    borderWidth: 1,
+                                                }]
+                                            },
+                                            options: {
+                                                scales: {
+                                                    yAxes: [{
+                                                        ticks: {
+                                                            beginAtZero: true
+                                                        }
+                                                    }]
+                                                }
+                                            }
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </body>   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="con right" style="width:50%;">
+        <div class="div_any">
+            <div class="left div_any01" style="width:100%;">
+                <div class="div_any_child" style="width:98%;position:relative;height: 420px;">
+                    <div class="div_any_title"><img src="{% static 'SmartCenter/images/title_17.png' %}" alt="Example Image">图像识别效果</div>
+                    <style>
+                        .video-container {
+                            display: flex; /* 使用Flex布局 */
+                            justify-content: center; /* 水平居中 */
+                            align-items: center;
+                            margin: 0 auto; /* 自动左右边距，用于居中容器 */
+                            height: 100%; /* 或一个特定的高度，确保与外部容器协调 */
+                        }
+                        video {
+                            width: 45%; /* 调整视频宽度，这里的40%是相对于.video-container的宽度，可以根据需要调整 */
+                            height: auto; /* 保持视频的宽高比 */
+                            margin: 5px; /* 可选，为视频添加外边距以改善视觉效果 */
+                        }
+                    </style>
+                    <div class="video-container">
+                        <video id="videoPlayer1" width="320" height="240" autoplay muted loop>
+                            <source src="{% static 'SmartCenter/videos/video1.mp4' %}" type="video/mp4">
+                        </video>
+                        <video id="videoPlayer2" width="320" height="240" autoplay muted loop>
+                            <source src="{% static 'SmartCenter/videos/video2.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <!-- 按钮 -->
+                    <style>
+                        .styled-button {
+                            background-color:  rgba(76, 135, 175, 0.1);; /* 蓝色背景 */
+                            color: white; /* 文字颜色 */
+                            padding: 10px 20px; /* 内边距 */
+                            text-align: center; /* 文字居中 */
+                            display: inline-block; /* 设置为行内块元素 */
+                            font-size: 16px; /* 字体大小 */
+                            cursor: pointer; /* 鼠标悬停时变为手型 */
+                            border-radius: 5px; /* 边角圆润 */
+                            transition: background-color 0.3s; /* 添加过渡效果 */
+                        }                        
+                        .styled-button:hover {/* 悬停时的按钮样式 */
+                            background-color: #336ca5; /* 更深的蓝色背景，增加深度感 */
+                        }
+                        .styled-button.active {
+                            background-color: #336ca5; /* 被点击后（激活）的按钮颜色 */
+                        }
+                    </style>
+                    <!-- HTML 中的按钮应用新样式 -->
+                    <button id="button1" class="styled-button">识别效果</button>
+                    <button id="button2" class="styled-button">左目镜头</button>
+                    <button id="button3" class="styled-button">右目镜头</button>
+            
+                    <!-- 引入jQuery库 -->
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $(document).ready(function(){
+                            // 默认情况下，第一个按钮是激活状态
+                            $("#button1").addClass("active");
+                            // 为每个按钮绑定点击事件
+                            $("#button1, #button2, #button3").click(function(){
+                                // 移除所有按钮的.active类
+                                $("#button1, #button2, #button3").removeClass("active");
+                                $("#button1").click(function(){
+                                    $("#videoPlayer1 source").attr("src", "{% static 'SmartCenter/videos/video1.mp4' %}");
+                                    $("#videoPlayer2 source").attr("src", "{% static 'SmartCenter/videos/video2.mp4' %}");
+                                    $("#videoPlayer1")[0].load();
+                                    $("#videoPlayer2")[0].load();
+                                    $("#videoPlayer1")[0].play();
+                                    $("#videoPlayer2")[0].play();
+                                    $(this).addClass("active");
+                                });
+                
+                                $("#button2").click(function(){
+                                    $("#videoPlayer1 source").attr("src", "{% static 'SmartCenter/videos/video1.mp4' %}");
+                                    $("#videoPlayer2 source").attr("src", "{% static 'SmartCenter/videos/video3.mp4' %}");
+                                    $("#videoPlayer1")[0].load();
+                                    $("#videoPlayer2")[0].load();
+                                    $("#videoPlayer1")[0].play();
+                                    $("#videoPlayer2")[0].play();
+                                    $(this).addClass("active");
+                                });
+                
+                                $("#button3").click(function(){
+                                    $("#videoPlayer1 source").attr("src", "{% static 'SmartCenter/videos/video3.mp4' %}");
+                                    $("#videoPlayer2 source").attr("src", "{% static 'SmartCenter/videos/video2.mp4' %}");
+                                    $("#videoPlayer1")[0].load();
+                                    $("#videoPlayer2")[0].load();
+                                    $("#videoPlayer1")[0].play();
+                                    $("#videoPlayer2")[0].play();
+                                    $(this).addClass("active");
+                                });
+                            });
+                        });
+                    </script>
+                </div>
+            </div>  
+            <div class="left div_any01" style="width:48%;">
+                <div class="div_any_child" style="height: 420px;">
+                    <div class="div_any_title"><img src="{% static 'SmartCenter/images/title_18.png' %}" alt="Example Image">识别出鱼的信息</div>
+                    <style>
+                        .text-center {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        }
+                        #fishInfoContainer {
+                            width: 90%;
+                            font-family: 'Roboto', sans-serif; /* 使用自定义字体 */
+                            color: white; /* 文字颜色 */
+                            font-size: 25px; /* 字体大小 */
+                            line-height: 2; /* 行高 */
+                            letter-spacing: 0.5px; /* 字母间距 */
+                        }
+                        #refreshFishInfo {
+                            background-color: #336ca5; /* 背景颜色 */
+                            border: none; /* 移除边框 */
+                            color: white; /* 文字颜色 */
+                            padding: 10px 20px; /* 内边距，调整按钮大小 */
+                            text-align: center; /* 文字居中 */
+                            text-decoration: none; /* 移除下划线 */
+                            display: inline-block; /* 保持块级元素特性但允许其他元素与其同行 */
+                            font-size: 16px; /* 字体大小 */
+                            margin: 10px 2px; /* 外边距，微调与其他元素的距离 */
+                            cursor: pointer; /* 鼠标悬停时指针变为手型 */
+                            border-radius: 5px; /* 圆角效果 */
+                            transition: all 0.3s ease; /* 过渡效果，使改变状态时平滑过渡 */
+                            width: 50%; /* 设置一个较窄的宽度，根据需要调整 */
+                            /* margin-top: -10px; 上移按钮，负值会使元素向上移动，正值则向下 */
+                            margin-bottom: 15%; /* 可能需要调整底部外边距以保持布局的和谐 */
+                            margin-left: 20%;
+                        }
+
+                        #refreshFishInfo:hover {
+                            background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+                        }
+
+                        #refreshFishInfo:active {
+                            transform: scale(0.98); /* 按下时稍微变小，模拟按钮按压效果 */
+                        }
+
+                    </style>     
+                    <div class="text-center" style="height: 100vh;">
+                    <div class="left div_any01" id="fishInfoContainer" style="width:48%;">
+                        <p><strong>编号:</strong> {{ fish.code }}</p>
+                        <p><strong>鱼种:</strong> {{ fish.species }}</p>
+                        <p><strong>体长:</strong> {{ fish.length }} cm</p>
+                        <p><strong>体重:</strong> {{ fish.weight }} g</p>
+                    </div>
+                    </div>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <button id="refreshFishInfo">识别下一条鱼</button>
+
+                    <script>
+                    $(document).ready(function(){
+                        $("#refreshFishInfo").click(function(){
+                            $.ajax({
+                                url: "{% url 'update_fish' %}", // 确保与urls.py中的name匹配
+                                dataType: 'json',
+                                success: function(data) {
+                                    $("#fishInfoContainer").html(`
+                                        <p><strong>编号:</strong> ${data.code}</p>
+                                        <p><strong>鱼种:</strong> ${data.species}</p>
+                                        <p><strong>体长:</strong> ${data.length} cm</p>
+                                        <p><strong>体重:</strong> ${data.weight} g</p>
+                                    `);
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("Error: " + error);
+                                }
+                            });
+                        });
+                    });
+                    </script>
+                </div>
+            </div>
+
+
+            <div class="right div_any01" style="width:48%;">
+                <div class="div_any_child" style="height: 420px;">
+                    <div class="div_any_title"><img src="{% static 'SmartCenter/images/title_19.png' %}" alt="Example Image">AI决策</div>
+                    <!-- <p id="pieChart2" class="p_chart" style="height: 400px;"></p> -->
+                    <style>
+                        .decision {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            text-align: center; /* 确保文本内容也水平居中 */
+                            margin-top:20%;
+                            margin-left:5%;
+                            margin-right:5%;
+                        }
+                        /* 示例美化文本样式 */
+                        .decision p {
+                            font-family: Arial, sans-serif; /* 更换字体 */
+                            font-size: 18px; /* 调整字体大小 */
+                            line-height: 1.5; /* 调整行高，增加阅读舒适度 */
+                            color: #6e6969; /* 更改文本颜色，这里使用深灰色 */
+                            margin: 10px 0; /* 上下外边距，使内容之间有一定的间距 */
+                            margin-top:20%;
+                            margin-left:5%;
+                            margin-right:5%;
+
+                        }
+
+                        /* 特别警告样式，如.warning类 */
+                        .decision.warning p {
+                            color: #FF6347; /* 使用警告色，如 tomato */
+                            font-weight: bold; /* 加粗警告文本 */
+                            margin-top:20%;
+                            margin-left:5%;
+                            margin-right:5%;
+                        }
+                    </style>
+
+                    {% if not error_message %}
+                        <!-- AI决策逻辑 -->
+                        {% if warning_oxygen == '否' and warning_temperature == '否' and description == '晴' %}
+                            <div class="decision">
+                                <p>当前天气为晴天，且环境指标正常，无需做出特别调整，适宜出海作业。</p>
+                            </div>
+                        {% else %}
+                            <div class="decision warning">
+                                {% if warning_oxygen == '是' %}
+                                    <p class="warning">警告：溶解氧水平低，需关注鱼类健康！建议开启增氧设备、进行部分换水操作、调整养殖密度。</p>
+                                {% endif %}
+                                {% if warning_temperature == '是' %}
+                                    <p class="warning">警告：水温过高，可能影响水质与生物状态！建议加强监测与记录、优化饲料管理。</p>
+                                {% endif %}
+                                {% if description != '晴' %}
+                                    <p class="warning">当前非晴朗天气，请根据具体天气情况调整计划。</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p>{{ error_message }}</p>
+                    {% endif %}
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>
